@@ -1,0 +1,119 @@
+.catalog-hero .card--content:hover .card--list a  {
+	color:  #fff;
+}
+.top__bar span {
+	color:  #fff;
+}
+.footer__nav h2  {
+	font-family: "Mostserrat", sans-serif !important;
+	font-weight: 500;	
+	font-size: var(--s-14);
+	line-height: 16px;
+	letter-spacing: -2%;
+	color:  rgba(10, 10, 10, 0.8);
+	margin-bottom:  10px;
+}
+
+.btn-color{
+	background-color: var(--accent);
+	font-size: var(--s-16);
+	font-weight: 400;
+	color: #fff;
+	border: 1px solid transparent;
+	padding: 20px;
+	white-space: normal;
+	text-decoration:  none!important;
+	margin-bottom:  15px;
+	display: inline-block;
+}
+.btn-color:hover,
+.btn-color:focus{
+	background-color: var(--accent-hover);
+	color: #fff!important;
+	outline: none;
+}
+.block--wrapper hr  {
+	height:  2px;
+	margin-bottom: 2px;
+    margin-top: -2px;
+}
+.block--wrapper h3  {	
+	font-weight: 500;	
+	font-size: 40px;	
+	line-height: 1.3;
+	letter-spacing: -2%;
+	margin-top:  1px;
+	margin-bottom:  4px;
+}
+.block--wrapper p  {
+	line-height:  1.4;
+}
+.block--wrapper p.time  {
+	line-height:  1.5;
+	margin-bottom: 2px;
+}
+.block--wrapper p.name  {
+	font-weight:  500;
+	margin-bottom:  -8px;
+}
+.block--wrapper a.mail  {
+	display:  inline-block;
+}
+.block--wrapper .map  {
+	max-width:  856px;
+	width:  100%;
+	margin-bottom: 20px;
+}
+.block.cart  {
+	margin-bottom: 30px;
+}
+
+@media (min-width: 1200px)  {
+	.footer__nav .footer__nav_item  {
+		max-width:  336px;
+	}
+}
+.catalog .block--elements{
+    align-items: stretch;
+    grid-template-rows: max-content;
+}
+.catalog .card--info{
+    margin-top: auto;
+}
+.catalog .card--actions{
+    margin-top: 0;
+    [data-openpopup="popup_form"] + [data-openpopup="popup_form"]{
+        opacity: 0;
+        pointer-events: none;
+        order: -1;
+    }
+}
+.catalog-detail .card--content{
+    height: auto;
+}
+
+@media (max-width: 767px)  {
+	.block--wrapper h3 {		
+		font-size: 28px;
+		line-height: 1.3;
+		letter-spacing: -2%;
+		margin-top: 12px;
+		margin-bottom: 1px;
+	}
+	.block--wrapper p {
+		line-height: 1.25;
+	}
+	.block--wrapper p.time {
+		line-height: 1.28;
+		margin-bottom: 2px;
+	}
+	.block--wrapper .map  {
+		margin-bottom: 5px;
+	}
+	.block--wrapper .map iframe  {
+		height: 350px;
+	}
+}
+.catalog .block--elements{
+    height: max-content;
+}

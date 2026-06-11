@@ -5,6 +5,14 @@
 
 if (!defined('ABSPATH')) exit;
 
+if (!defined('AZS_IMPORT_GOOGLE_SHEET_CSV_URL')) {
+    define('AZS_IMPORT_GOOGLE_SHEET_CSV_URL', 'https://docs.google.com/spreadsheets/d/1KPX299zfUISv42WMQj-L8NrWa5y2lK_M4oUQNiYBq0U/export?format=csv&gid=0');
+}
+
+if (!defined('AZS_IMPORT_GOOGLE_SHEET_EDIT_URL')) {
+    define('AZS_IMPORT_GOOGLE_SHEET_EDIT_URL', 'https://docs.google.com/spreadsheets/d/1KPX299zfUISv42WMQj-L8NrWa5y2lK_M4oUQNiYBq0U/edit?usp=sharing');
+}
+
 // ======================================================================
 // Admin menu
 // ======================================================================
@@ -23,23 +31,22 @@ function azs_import_admin_menu() {
 // Admin page markup
 // ======================================================================
 function azs_import_admin_page() {
-    $csv_path = get_stylesheet_directory() . '/import/items.csv';
-    $csv_exists = file_exists($csv_path);
+    $csv_url = AZS_IMPORT_GOOGLE_SHEET_CSV_URL;
+    $csv_error = '';
     $row_count = 0;
 
-    if ($csv_exists) {
-        $row_count = azs_import_count_csv_rows($csv_path);
-    }
+    $row_count = azs_import_count_csv_rows($csv_error);
 
     ?>
     <div class="wrap">
         <h1>Импорт товаров из CSV</h1>
 
-        <?php if (!$csv_exists) : ?>
-            <div class="notice notice-error"><p>Файл <code>import/items.csv</code> не найден в папке темы.</p></div>
+        <?php if ($csv_error) : ?>
+            <div class="notice notice-error"><p>Не удалось загрузить CSV из Google Sheets: <?php echo esc_html($csv_error); ?></p></div>
         <?php else : ?>
             <div class="notice notice-info">
-                <p>Файл: <code><?php echo esc_html($csv_path); ?></code></p>
+                <p>Google Sheets: <a href="<?php echo esc_url(AZS_IMPORT_GOOGLE_SHEET_EDIT_URL); ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html(AZS_IMPORT_GOOGLE_SHEET_EDIT_URL); ?></a></p>
+                <p>CSV export: <code><?php echo esc_html($csv_url); ?></code></p>
                 <p>Найдено записей: <strong><?php echo intval($row_count); ?></strong></p>
             </div>
 
@@ -167,10 +174,59 @@ function azs_import_admin_page() {
 }
 
 // ======================================================================
+// Load CSV from Google Sheets and expose it as a readable stream
+// ======================================================================
+function azs_import_fetch_csv_content(&$error = '') {
+    $error = '';
+
+    $response = wp_remote_get(AZS_IMPORT_GOOGLE_SHEET_CSV_URL, array(
+        'timeout'     => 30,
+        'redirection' => 5,
+    ));
+
+    if (is_wp_error($response)) {
+        $error = $response->get_error_message();
+        return '';
+    }
+
+    $code = wp_remote_retrieve_response_code($response);
+    if ($code !== 200) {
+        $error = 'HTTP ' . $code;
+        return '';
+    }
+
+    $body = wp_remote_retrieve_body($response);
+    if (trim($body) === '') {
+        $error = 'пустой ответ от Google Sheets';
+        return '';
+    }
+
+    return $body;
+}
+
+function azs_import_open_csv_handle(&$error = '') {
+    $csv = azs_import_fetch_csv_content($error);
+    if ($csv === '') {
+        return false;
+    }
+
+    $handle = fopen('php://temp', 'r+');
+    if (!$handle) {
+        $error = 'не удалось открыть временный поток CSV';
+        return false;
+    }
+
+    fwrite($handle, $csv);
+    rewind($handle);
+
+    return $handle;
+}
+
+// ======================================================================
 // Count logical CSV rows (respects quoted multiline fields)
 // ======================================================================
-function azs_import_count_csv_rows($path) {
-    $handle = fopen($path, 'r');
+function azs_import_count_csv_rows(&$error = '') {
+    $handle = azs_import_open_csv_handle($error);
     if (!$handle) return 0;
 
     $count = 0;
@@ -185,16 +241,19 @@ function azs_import_count_csv_rows($path) {
 // ======================================================================
 // Parse all CSV rows into an array (cached in transient for duration of import)
 // ======================================================================
-function azs_import_parse_csv() {
+function azs_import_parse_csv(&$error = '') {
     $cached = get_transient('azs_import_rows');
     if ($cached !== false) return $cached;
 
-    $path = get_stylesheet_directory() . '/import/items.csv';
-    $handle = fopen($path, 'r');
+    $handle = azs_import_open_csv_handle($error);
     if (!$handle) return array();
 
     $headers = fgetcsv($handle, 0, ',', '"', '\\');
-    if (!$headers) { fclose($handle); return array(); }
+    if (!$headers) {
+        fclose($handle);
+        $error = 'не найдена строка заголовков CSV';
+        return array();
+    }
 
     $headers = array_map('trim', $headers);
 
@@ -231,7 +290,16 @@ function azs_import_batch_handler() {
     $batch_size = intval($_POST['batch_size'] ?? 10);
     $update_existing = !empty($_POST['update_existing']);
 
-    $rows  = azs_import_parse_csv();
+    if ($offset === 0) {
+        delete_transient('azs_import_rows');
+    }
+
+    $csv_error = '';
+    $rows  = azs_import_parse_csv($csv_error);
+    if ($csv_error) {
+        wp_send_json_error(array('message' => $csv_error));
+    }
+
     $total = count($rows);
     $batch = array_slice($rows, $offset, $batch_size);
 

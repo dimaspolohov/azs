@@ -196,27 +196,6 @@ function azs_get_catalog_query_args($params = array()) {
         'paged'          => max(1, intval($p['page'])),
     );
 
-    switch ($p['sort']) {
-        case 'new':
-            $args['orderby'] = 'date';
-            $args['order']   = 'DESC';
-            break;
-        case 'price-asc':
-            $args['meta_key'] = '_price';
-            $args['orderby']  = 'meta_value_num';
-            $args['order']    = 'ASC';
-            break;
-        case 'price-desc':
-            $args['meta_key'] = '_price';
-            $args['orderby']  = 'meta_value_num';
-            $args['order']    = 'DESC';
-            break;
-        default:
-            $args['orderby'] = 'menu_order title';
-            $args['order']   = 'ASC';
-            break;
-    }
-
     $tax_query = array('relation' => 'AND');
     $has_tax   = false;
 
@@ -330,6 +309,53 @@ function azs_get_catalog_query_args($params = array()) {
             $args['post__in'] = array(0);
         }
     }
+
+    return azs_apply_catalog_stock_order($args, $p['sort']);
+}
+
+/**
+ * In-stock products first, out-of-stock last; then apply selected catalog sort.
+ */
+function azs_apply_catalog_stock_order($args, $sort) {
+    $meta_query = isset($args['meta_query']) ? $args['meta_query'] : array();
+    if (empty($meta_query)) {
+        $meta_query = array('relation' => 'AND');
+    } elseif (!isset($meta_query['relation'])) {
+        $meta_query = array('relation' => 'AND') + $meta_query;
+    }
+
+    $meta_query['stock_status_clause'] = array(
+        'key'     => '_stock_status',
+        'compare' => 'EXISTS',
+    );
+
+    $secondary_order = array();
+    switch ($sort) {
+        case 'new':
+            $secondary_order = array('date' => 'DESC');
+            break;
+        case 'price-asc':
+            $meta_query['price_clause'] = array(
+                'key'  => '_price',
+                'type' => 'NUMERIC',
+            );
+            $secondary_order = array('price_clause' => 'ASC');
+            break;
+        case 'price-desc':
+            $meta_query['price_clause'] = array(
+                'key'  => '_price',
+                'type' => 'NUMERIC',
+            );
+            $secondary_order = array('price_clause' => 'DESC');
+            break;
+        default:
+            $secondary_order = array('menu_order' => 'ASC', 'title' => 'ASC');
+            break;
+    }
+
+    unset($args['meta_key'], $args['order']);
+    $args['meta_query'] = $meta_query;
+    $args['orderby']    = array_merge(array('stock_status_clause' => 'ASC'), $secondary_order);
 
     return $args;
 }

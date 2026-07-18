@@ -174,7 +174,7 @@ banner_slider.forEach(banner_sl => {
     centeredSlides: true,
     focusableElements: 'input, select, option, textarea, button, label, a',
     effect: 'fade',
-    loop: true,
+    loop: false,
     mousewheel: {
       forceToAxis: true,
     },

@@ -1995,6 +1995,9 @@ input[type=number] {
     bottom: var(--s-16);
   }
 }
+.block_banner .banner:not(.swiper-slide-active) {
+  pointer-events: none;
+}
 .block_banner .slider_controls {
   position: absolute;
   inset: 0;

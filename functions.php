@@ -2,6 +2,7 @@
 
 if (!defined('ABSPATH')) exit;
 
+require_once get_stylesheet_directory() . '/inc/consent-log.php';
 require_once get_stylesheet_directory() . '/inc/custom-post-types.php';
 require_once get_stylesheet_directory() . '/inc/acf-options.php';
 require_once get_stylesheet_directory() . '/inc/acf-fields.php';
@@ -661,12 +662,18 @@ function azs_handle_form_submission()
     check_ajax_referer('azs_nonce', 'nonce');
 
     $form_type = sanitize_text_field(wp_unslash($_POST['form_type'] ?? ''));
+
+    if (!azs_consent_privacy_given()) {
+        azs_consent_log($form_type, 400);
+        wp_send_json_error(array('message' => 'Необходимо согласие на обработку персональных данных'));
+    }
+
     $name      = sanitize_text_field(wp_unslash($_POST['name']      ?? ''));
     $phone     = sanitize_text_field(wp_unslash($_POST['phone']     ?? ''));
     $email     = sanitize_email(wp_unslash($_POST['email']          ?? ''));
     $comment   = sanitize_textarea_field(wp_unslash($_POST['comment'] ?? ''));
-    $privacy   = !empty($_POST['privacy']) ? 'да' : 'нет';
-    $mailing   = !empty($_POST['mailing']) ? 'да' : 'нет';
+    $privacy   = azs_consent_privacy_given() ? 'да' : 'нет';
+    $mailing   = azs_consent_mailing_given() ? 'да' : 'нет';
 
     $subjects = array(
         'callback'     => 'Заявка на обратный звонок',
@@ -693,6 +700,13 @@ function azs_handle_form_submission()
     $headers     = array('Content-Type: text/plain; charset=UTF-8');
 
     $sent = wp_mail($admin_email, $subject, $message, $headers);
+
+    azs_consent_log($form_type, $sent ? 200 : 500, array(
+        'name'    => $name,
+        'phone'   => $phone,
+        'email'   => $email,
+        'comment' => $comment,
+    ));
 
     if ($sent) {
         wp_send_json_success();

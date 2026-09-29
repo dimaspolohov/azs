@@ -315,8 +315,15 @@ add_action('wp_ajax_nopriv_azs_place_order', 'azs_place_order');
 function azs_place_order() {
     check_ajax_referer('azs_nonce', 'nonce');
 
+    if (!azs_consent_privacy_given()) {
+        azs_consent_log('order', 400);
+        wp_send_json_error(['message' => 'Необходимо согласие на обработку персональных данных']);
+        return;
+    }
+
     $name  = sanitize_text_field(wp_unslash($_POST['name']  ?? ''));
     $phone = sanitize_text_field(wp_unslash($_POST['phone'] ?? ''));
+    $consent_payload = ['name' => $name, 'phone' => $phone];
 
     if (!$name || !$phone) {
         wp_send_json_error(['message' => 'Заполните все обязательные поля']);
@@ -352,11 +359,14 @@ function azs_place_order() {
 
         $cart->empty_cart();
 
+        azs_consent_log('order', 200, $consent_payload, ['order_id' => $order->get_id()]);
+
         wp_send_json_success([
             'order_id'     => $order->get_id(),
             'order_number' => $order->get_order_number(),
         ]);
     } catch (Exception $e) {
+        azs_consent_log('order', 500, $consent_payload);
         wp_send_json_error(['message' => 'Ошибка при создании заказа']);
     }
 }
@@ -478,6 +488,8 @@ function azs_cart_inline_js() {
 
                 var nameVal  = orderForm.querySelector('input[name="order_name"]');
                 var phoneVal = orderForm.querySelector('input[name="order_phone"]');
+                var privacy  = orderForm.querySelector('input[name="privacy"]');
+                var mailing  = orderForm.querySelector('input[name="privacy2"]');
                 var btn      = orderForm.querySelector('[type="submit"]');
 
 /*                 if (!nameVal || !phoneVal || !nameVal.value.trim() || !phoneVal.value.trim()) return;
@@ -488,6 +500,8 @@ function azs_cart_inline_js() {
                 fd.append('nonce', nonce);
                 fd.append('name', nameVal.value.trim());
                 fd.append('phone', phoneVal.value.trim());
+                if (privacy && privacy.checked) fd.append('privacy', '1');
+                if (mailing && mailing.checked) fd.append('privacy2', '1');
 
                 fetch(ajaxUrl, { method: 'POST', body: fd })
                     .then(function(r) { return r.json(); })

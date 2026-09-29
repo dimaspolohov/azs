@@ -20,6 +20,9 @@ if (!$categories) return;
                 $thumb_url = $thumb_id ? wp_get_attachment_url($thumb_id) : '';
                 $term_link = get_term_link($term);
 
+                $category_acf_id = 'product_cat_'.$term_id;
+                $category_short_name = get_field('category_short_name', $category_acf_id);
+
                 $children = get_terms(array(
                     'taxonomy'   => 'product_cat',
                     'parent'     => $term_id,
@@ -32,12 +35,34 @@ if (!$categories) return;
                 <?php if ($thumb_url) : ?>
                 <div class="card--image"><img src="<?php echo esc_url($thumb_url); ?>" alt="<?php echo esc_attr($term->name); ?>"></div>
                 <?php endif; ?>
+
                 <div class="card--content">
-                    <div class="card--title"><?php echo esc_html($term->name); ?></div>
+                    <div class="card--title">
+                    <?if(!empty($category_short_name)):?>
+                        <?php echo $category_short_name?>
+                    <?else:?>
+                        <?php echo esc_html($term->name); ?>
+                    <?endif?>
+                </div>
+
                     <?php if (!empty($children) && !is_wp_error($children)) : ?>
                     <div class="card--list">
                         <?php foreach ($children as $child) : ?>
-                            <a class="link" href="<?php echo esc_url(get_term_link($child)); ?>"><?php echo esc_html($child->name); ?></a>
+                            <a class="link" href="<?php echo esc_url(get_term_link($child)); ?>">
+
+                                <?//
+                                $child_id = $child->term_id;
+                                $category_acf_id = 'product_cat_'.$child_id;
+                                $category_short_name = get_field('category_short_name', $category_acf_id);
+                                ?>
+
+                                <?if(!empty($category_short_name)):?>
+                                    <?php echo esc_html($category_short_name)?>
+                                <?else:?>
+                                    <?php echo esc_html($child->name); ?>
+                                <?endif?>
+
+                            </a>
                         <?php endforeach; ?>
                     </div>
                     <?php endif; ?>

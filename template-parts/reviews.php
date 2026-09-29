@@ -1,9 +1,11 @@
 <?php
 $reviews_link = function_exists('get_field') ? get_field('reviews_external_link') : '';
+$reviews_orders = function_exists('get_field') ? get_field('reviews_external_orders') : '';
+$reviews_rating = function_exists('get_field') ? get_field('reviews_external_rating') : '';
+$reviews_feedback = function_exists('get_field') ? get_field('reviews_external_feedback') : '';
 
 $reviews = new WP_Query(array(
-    'post_type'      => 'azs_review',
-    'posts_per_page' => 4,
+    'post_type'      => 'azs_review',    
     'orderby'        => 'date',
     'order'          => 'DESC',
 ));
@@ -18,16 +20,16 @@ $reviews = new WP_Query(array(
             <div class="card main showInUp">
                 <div class="card--top">
                     <div class="card__subtitle">
-                        <p>Более 1195 выполненых заказов на маркетплейсе</p>
+                        <p><?php echo $reviews_orders; ?></p>
                     </div>
                     <div class="card__logo"><img src="<?php echo azs_img('ozon.svg'); ?>" alt="Ozon"></div>
                 </div>
                 <div class="card--content">
                     <div class="card--title">
-                        <p>Все для АЗС</p><span>4.7 из 5</span>
+                        <p>Все для АЗС</p><span><?php echo $reviews_rating; ?></span>
                     </div>
                 </div>
-                <div class="card__stars"><img src="<?php echo azs_img('stars.svg'); ?>" alt=""><span>На основе 385 отзывов</span></div>
+                <div class="card__stars"><img src="<?php echo azs_img('stars.svg'); ?>" alt=""><span><?php echo $reviews_feedback; ?></span></div>
                 <div class="card--actions">
                     <a class="button button-filled button-secondary" href="<?php echo esc_url($reviews_link ?: '#'); ?>">
                         <span>Смотреть больше отзывов</span><span class="icon-arrow-right"></span>

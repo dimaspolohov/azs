@@ -13,8 +13,12 @@ $phone_clean = preg_replace('/[^+\d]/', '', $phone);
 <!-- Cookies -->
 <div class="popup popup-cookies" data-popup="popup_cookies" data-lenis-prevent>
     <div class="popup--content">
-        <p>Пользуясь нашим сайтом, вы соглашаетесь на обработку файлов cookies в соответствии с <a href="">политикой обработки персональных данных</a></p>
-        <div class="button button-filled button-secondary popup--close" data-closepopup data-accept><span>ОК</span></div>
+		
+		<p>Ознакомлен (-на) с Положением об обработке и защите персональных данных и даю согласие на <a href="/privacy-policy/">обработку персональных данных</a></p>
+		
+        <!--p>Пользуясь нашим сайтом, вы соглашаетесь на обработку файлов cookies в соответствии с <a href="/privacy-policy/">политикой обработки персональных данных</a></p-->
+        <div class="button button-filled button-secondary popup--close" data-closepopup data-accept><span>Согласен</span></div>
+		 <div class="button button-filled button-secondary popup--close" data-closepopup data-accept><span>Отказаться</span></div>
     </div>
 </div>
 
@@ -91,6 +95,9 @@ $phone_clean = preg_replace('/[^+\d]/', '', $phone);
     </div>
 </div>
 
+
+
+
 <!-- Callback Form -->
 <div class="popup popup-form popup-universal" data-popup="popup_callback" data-lenis-prevent>
     <div class="popup--content">
@@ -98,20 +105,38 @@ $phone_clean = preg_replace('/[^+\d]/', '', $phone);
             <h3>Заполните форму и мы вам перезвоним</h3>
             <div class="popup--close" data-closepopup="popup_callback"><span class="icon-close"></span></div>
         </div>
-        <form class="form" method="post" data-form-type="callback">
+        <form class="form" method="post" data-form-type="callback" novalidate>
             <label class="form--input">
-                <input type="text" placeholder="Иванов Иван Иванович" name="name" required>
+                <input type="text" placeholder="Иванов Иван Иванович" name="name" required  data-validate="name">
             </label>
             <label class="form--input">
-                <input type="tel" placeholder="+7 999 999-99-99" name="phone" inputmode="numeric" autocomplete="tel" required>
+                <input type="tel" placeholder="+7 999 999-99-99" name="phone" data-validate="phone" inputmode="numeric" autocomplete="tel" required>
             </label>
             <button class="button button-filled button-accent" type="submit"><span>Заказать звонок</span><span class="icon-arrow-right"></span></button>
+			
+			
             <div class="form--policy">
                 <label class="form--input input-checkbox">
-                    <input type="checkbox" required><span></span>
+                    <input type="checkbox" name="privacy" value="1" data-validate="privacy" required><span></span>
                 </label>
-                <span>Отправляя форму, вы соглашаетесь на обработку персональных данных в соответствии с <a href="">политикой обработки персональных данных</a></span>
+                <!--span>Отправляя форму, вы соглашаетесь на обработку персональных данных в соответствии с <a href="/privacy-policy/">политикой обработки персональных данных</a></span-->
+				<span>Ознакомлен (-на) с <a href="/privacy-policy/">Политикой в отношении обработки персональных данных</a> и даю Согласие на их обработку</span>
+				</div>
+				<div class="form--policy">
+				<label class="form--input input-checkbox">
+                    <input type="checkbox" name="privacy2" value="1" data-validate="privacy2"><span></span>
+                </label>
+                <span>Согласен (-на) на получение <a href="/poleznaya-informacziya/">полезной информации и информации об акциях</a></span>
+				
             </div>
+			
+			
+
+			
+			
+			
+			
+			
         </form>
     </div>
 </div>
@@ -123,30 +148,43 @@ $phone_clean = preg_replace('/[^+\d]/', '', $phone);
             <h3>Сообщить о поступлении товара</h3>
             <div class="popup--close" data-closepopup="popup_form"><span class="icon-close"></span></div>
         </div>
-        <form class="form" method="post" data-form-type="product">
+       <form class="form" method="post" data-form-type="product" novalidate>
             <label class="form--input">
-                <input type="text" placeholder="Иванов Иван Иванович" name="name" required autocomplete="name">
+                <input type="text" placeholder="Иванов Иван Иванович" name="name" data-validate="name" required autocomplete="name">
             </label>
             <label class="form--input">
-                <input type="tel" placeholder="+7 999 999-99-99" name="phone" inputmode="numeric" autocomplete="tel" required>
+                <input type="tel" placeholder="+7 999 999-99-99" name="phone" data-validate="phone" inputmode="numeric" autocomplete="tel" required>
             </label>
             <label class="form--input">
-                <input type="email" placeholder="example@imperial.ru" name="email" autocomplete="email" required>
+                <input type="email" placeholder="example@imperial.ru" data-validate="email" name="email" autocomplete="email" required>
             </label>
             <label class="form--input">
-                <textarea placeholder="Введите комментарий" name="comment" rows="4" maxlength="1000"></textarea>
+                <textarea placeholder="Введите комментарий" name="comment" data-validate="comment" rows="4" maxlength="1000"></textarea>
             </label>
             <button class="button button-filled button-accent" type="submit"><span>Сообщить о поступлении</span><span class="icon-arrow-right"></span></button>
-            <div class="form--policy">
+        
+		   
+		    <div class="form--policy">
                 <label class="form--input input-checkbox">
-                    <input type="checkbox" required><span></span>
+                    <input type="checkbox" name="privacy" value="1" data-validate="privacy" required><span></span>
                 </label>
-                <span>Отправляя форму, вы соглашаетесь на обработку персональных данных в соответствии с <a href="">политикой обработки персональных данных</a></span>
+                <!--span>Отправляя форму, вы соглашаетесь на обработку персональных данных в соответствии с <a href="/privacy-policy/">политикой обработки персональных данных</a></span-->
+				<span>Ознакомлен (-на) с <a href="/privacy-policy/">Политикой в отношении обработки персональных данных</a> и даю Согласие на их обработку</span>
+				</div>
+				<div class="form--policy">
+				<label class="form--input input-checkbox">
+                    <input type="checkbox" name="privacy2" value="1" data-validate="privacy2"><span></span>
+                </label>
+                <span>Согласен (-на) на получение <a href="/poleznaya-informacziya/">полезной информации и информации об акциях</a></span>
+				
             </div>
+		   
+		   
         </form>
     </div>
 </div>
 
+<!-- News Subscription -->
 <!-- News Subscription -->
 <div class="popup popup-form popup-universal" data-popup="popup_news" data-lenis-prevent>
     <div class="popup--content">
@@ -154,19 +192,27 @@ $phone_clean = preg_replace('/[^+\d]/', '', $phone);
             <h3>Подпишитесь на новости, чтобы не пропустить акции и новые товары</h3>
             <div class="popup--close" data-closepopup="popup_news"><span class="icon-close"></span></div>
         </div>
-        <form class="form" method="post" data-form-type="news">
+        <form class="form" method="post" data-form-type="news" novalidate>
             <label class="form--input">
-                <input type="text" placeholder="Иванов Иван Иванович" name="name" required>
+                <input type="text" placeholder="Иванов Иван Иванович" name="name" data-validate="name" required>
             </label>
             <label class="form--input">
-                <input type="email" placeholder="example@imperial.ru" name="email" autocomplete="email" required>
+                <input type="email" placeholder="example@imperial.ru" name="email" data-validate="email" autocomplete="email" required>
             </label>
             <button class="button button-filled button-accent" type="submit"><span>Подписаться на новости</span><span class="icon-arrow-right"></span></button>
             <div class="form--policy">
                 <label class="form--input input-checkbox">
-                    <input type="checkbox" required><span></span>
+                    <input type="checkbox" name="privacy" value="1" data-validate="privacy" required><span></span>
                 </label>
-                <span>Отправляя форму, вы соглашаетесь на обработку персональных данных в соответствии с <a href="">политикой обработки персональных данных</a></span>
+                <!--span>Отправляя форму, вы соглашаетесь на обработку персональных данных в соответствии с <a href="/privacy-policy/">политикой обработки персональных данных</a></span-->
+				<span>Ознакомлен (-на) с <a href="/privacy-policy/">Политикой в отношении обработки персональных данных</a> и даю Согласие на их обработку</span>
+				</div>
+				<div class="form--policy">
+				<label class="form--input input-checkbox">
+                    <input type="checkbox" name="privacy2" value="1" data-validate="privacy2"><span></span>
+                </label>
+                <span>Согласен (-на) на получение <a href="/poleznaya-informacziya/">полезной информации и информации об акциях</a></span>
+				
             </div>
         </form>
     </div>
@@ -209,7 +255,7 @@ $phone_clean = preg_replace('/[^+\d]/', '', $phone);
         <div class="notification notification-success">
             <div class="notification--title">Спасибо! <br> Ваша заявка принята</div>
             <div class="notification--img"></div>
-            <div class="notification--text">Наш менеджер свяжится с вами в ближайшее время</div>
+            <div class="notification--text">Менеджер свяжется с вами в течение часа</div>
         </div>
     </div>
 </div>

@@ -173,6 +173,24 @@ function azs_register_acf_fields() {
                 'type'         => 'url',
                 'instructions' => 'External URL (e.g. Ozon reviews page)',
             ),
+			array(
+				'key'           => 'field_fp_reviews_orders',
+				'label'         => 'Количество звказов',
+				'name'          => 'reviews_external_orders',
+				'type'          => 'text',				
+			),
+			array(
+				'key'           => 'field_fp_reviews_rating',
+				'label'         => 'Рейтинг',
+				'name'          => 'reviews_external_rating',
+				'type'          => 'text',				
+			),
+			array(
+				'key'           => 'field_fp_reviews_feedback',
+				'label'         => 'Количество отзывов',
+				'name'          => 'reviews_external_feedback',
+				'type'          => 'text',				
+			),
         ),
         'location' => array(
             array(

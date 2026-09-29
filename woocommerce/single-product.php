@@ -8,6 +8,13 @@ if (!defined('ABSPATH')) exit;
 
 get_header();
 
+
+$brand_schema = '';
+$img_url_schema = '';
+$stock_schema = '';
+$description_schema = '';
+$category_schema = '';
+
 while (have_posts()) : the_post();
     global $product;
     $product = wc_get_product(get_the_ID());
@@ -71,7 +78,10 @@ while (have_posts()) : the_post();
         if ($primary_term) :
             $ancestors = array_reverse(get_ancestors($primary_term->term_id, 'product_cat'));
             $pos = 3;
-            foreach ($ancestors as $anc_id) :
+
+			$category_schema = $primary_term->name;
+
+            foreach ($ancestors as $key => $anc_id) :
                 $anc = get_term($anc_id, 'product_cat');
                 if (!$anc || is_wp_error($anc)) continue;
             ?><a href="<?php echo esc_url(get_term_link($anc)); ?>" itemprop="itemListElement" itemscope="" itemtype="https://schema.org/ListItem">
@@ -90,8 +100,12 @@ while (have_posts()) : the_post();
         <div class="block--wrapper">
           <div class="card" data-product-id="<?php echo esc_attr($product_id); ?>">
             <div class="card--image">
+
               <?php if (!empty($all_image_ids)) :
-                  foreach ($all_image_ids as $img_id) :
+
+                      $img_url_schema = wp_get_attachment_image_url($all_image_ids[0], 'large');
+
+                  foreach ($all_image_ids as $key => $img_id) :
                       $img_url = wp_get_attachment_image_url($img_id, 'large');
                       if (!$img_url) continue;
               ?>
@@ -104,7 +118,7 @@ while (have_posts()) : the_post();
             </div>
             <div class="card--content">
               <div class="card--title">
-                <?php if ($sku) : ?><span>Артикул: <?php echo esc_html($sku); ?></span><?php endif; ?><h2><?php echo esc_html($title); ?></h2>
+                <?php if ($sku) : ?><span>Артикул: <?php echo esc_html($sku); ?></span><?php endif; ?><h1><?php echo esc_html($title); ?></h1>
               </div>
               <?php if ($short_desc) : ?>
               <div class="card--description">
@@ -115,6 +129,12 @@ while (have_posts()) : the_post();
                 <div class="card--price">
                   <?php if ($price !== '' && $price !== null) : ?><div class="card--price-current"><span><?php echo esc_html(number_format((float) $price, 0, '', ' ')); ?></span><span>₽</span></div><?php endif; ?><?php if ($is_in_stock && $is_on_sale && $regular_price && $sale_price && (float) $regular_price > (float) $sale_price) : ?><span class="card--price-old"><span><?php echo esc_html(number_format((float) $regular_price, 0, '', ' ')); ?></span><span>₽</span></span><?php endif; ?>
                 </div>
+
+<?php if ($is_in_stock) : ?>
+<?$stock_schema = 'instock';?>
+<?endif?>
+
+
                 <div class="card--stock"><?php if ($is_in_stock) : ?><span class="card--stock-label">В наличии:</span><span class="card--stock-value"><?php echo $stock_qty !== null ? esc_html($stock_qty . ' шт') : 'на складе'; ?></span><?php else : ?><span class="card--stock-label">Нет в наличии</span><?php endif; ?></div>
               </div>
               <div class="card--actions">
@@ -142,6 +162,7 @@ while (have_posts()) : the_post();
             <?php if ($has_description) : ?>
             <div class="text">
               <?php echo $description; ?>
+              <?$description_schema = strip_tags(str_replace(["\r\n", "\r", "\n", "\t"], '', $description));?>
             </div>
             <?php endif; ?>
             <?php if ($has_files) : ?>
@@ -193,6 +214,9 @@ while (have_posts()) : the_post();
                 <td><?php echo esc_html($row[0]); ?></td>
                 <td><?php echo esc_html($row[1]); ?></td>
               </tr>
+		<?if(esc_html($row[0]) == 'Производитель') {
+			$brand_schema = esc_html($row[1]);
+		}?>
               <?php endforeach; ?>
             </table>
           </div>
@@ -207,5 +231,79 @@ while (have_posts()) : the_post();
       ?>
 
 <?php endwhile; ?>
+
+<?// 
+$current_url = get_self_link();
+?>
+
+<script type="application/ld+json">
+    {
+      "@context": "https://schema.org/",
+      "@type": "Product",
+      "@id": "<?=$current_url?>#product",
+      "name": "<?php echo esc_html($title); ?>",
+<?if(!empty($category_schema)):?>
+      "category": "<?=$category_schema?>",
+<?endif?>
+<?if(!empty($img_url_schema)):?>
+      "image": [
+        "<?= $img_url_schema?>"
+       ],
+<?endif?>
+<?if(!empty($description_schema)):?>
+      "description": "<?=$description_schema?>",
+<?endif?>
+<?if(!empty($sku)):?>
+      "sku": "<?php echo esc_html($sku); ?>",
+<?endif?>
+<?if(!empty($brand_schema)):?>
+      "brand": {
+        "@type": "Organization",
+        "name": "<?=$brand_schema?>"
+      },
+<?endif?>
+      "offers": {
+        "@type": "Offer",
+        "url": "<?=$current_url?>",
+        "priceCurrency": "RUB",
+<?if(!empty($price)):?>
+        "price": <?=round((int)$price)?>,
+<?endif?>
+        "itemCondition": "https://schema.org/NewCondition",
+<?if($stock_schema == 'instock'):?>
+        "availability": "https://schema.org/InStock",
+<?else:?>
+        "availability": "https://schema.org/OutOfStock",
+<?endif?>
+        "seller": {
+          "@type": "Organization",
+          "name": "ООО «Торговый Дом «Все для АЗС»"
+        }
+      }
+    }
+</script>
+
+
+<script type="application/ld+json">
+    {
+      "@context": "https://schema.org/",
+      "@type": "Offer",
+      "itemOffered": "<?=$current_url?>#product",
+      "offeredBy": {
+         "@id": "https://piusi-raasm.ru/#organization"
+       },
+      "name": "<?php echo esc_html($title); ?>",
+<?if($stock_schema == 'instock'):?>
+      "availability": "https://schema.org/InStock",
+<?else:?>
+      "availability": "https://schema.org/OutOfStock",
+<?endif?>
+      "priceCurrency": "RUB",
+<?if(!empty($price)):?>
+      "price": <?=round((int)$price)?>
+<?endif?>
+    }
+</script>
+
 
 <?php get_footer(); ?>

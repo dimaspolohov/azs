@@ -771,12 +771,24 @@ initHeroSearch();
         if (currentPopup) {
           PopupManager.close(currentPopup.dataset.popup);
         }
-        if (response.success) {
+          if (response.success) {
+          form.reset();
+          document.dispatchEvent(new CustomEvent('azs:form-success', {
+            detail: { formType: formType }
+          }));
+          PopupManager.open('popup_success');
+        } else {
+          document.dispatchEvent(new CustomEvent('azs:form-error', {
+            detail: { formType: formType }
+          }));
+          PopupManager.open('popup_error');
+}
+      /*   if (response.success) {
           form.reset();
           PopupManager.open('popup_success');
         } else {
           PopupManager.open('popup_error');
-        }
+        } */
       })
       .catch(function () {
         const currentPopup = form.closest('[data-popup]');
@@ -790,3 +802,5 @@ initHeroSearch();
       });
   });
 })();
+
+

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * WooCommerce Product Archive — fully replaces default template.
  * Matches frontend/catalog.html layout.
@@ -73,7 +74,7 @@ if ($current_term && !empty($current_term->description)) {
 <div class="block--wrapper">
     <div class="breadcrumbs" itemscope itemtype="https://schema.org/BreadcrumbList">
         <a href="<?php echo esc_url(home_url('/')); ?>" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-            <meta itemprop="position" content="1"/>
+            <meta itemprop="position" content="1" />
             <span itemprop="name">Главная</span><span class="separator">></span>
         </a>
         <?php if ($current_term) :
@@ -81,7 +82,7 @@ if ($current_term && !empty($current_term->description)) {
             $pos = 2;
         ?>
             <a href="<?php echo esc_url($shop_url); ?>" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-                <meta itemprop="position" content="<?php echo $pos++; ?>"/>
+                <meta itemprop="position" content="<?php echo $pos++; ?>" />
                 <span itemprop="name">Каталог</span><span class="separator">></span>
             </a>
             <?php foreach ($ancestors as $anc_id) :
@@ -89,22 +90,38 @@ if ($current_term && !empty($current_term->description)) {
                 if (!$anc || is_wp_error($anc)) continue;
             ?>
                 <a href="<?php echo esc_url(get_term_link($anc)); ?>" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-                    <meta itemprop="position" content="<?php echo $pos++; ?>"/>
+                    <meta itemprop="position" content="<?php echo $pos++; ?>" />
                     <span itemprop="name"><?php echo esc_html($anc->name); ?></span><span class="separator">></span>
                 </a>
             <?php endforeach; ?>
             <a itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-                <meta itemprop="position" content="<?php echo $pos; ?>"/>
+                <meta itemprop="position" content="<?php echo $pos; ?>" />
                 <span itemprop="name"><?php echo esc_html($current_term->name); ?></span>
             </a>
         <?php else : ?>
             <a itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-                <meta itemprop="position" content="2"/>
+                <meta itemprop="position" content="2" />
                 <span itemprop="name">Каталог</span>
             </a>
         <?php endif; ?>
     </div>
 </div>
+
+<?php
+$catalog_h1 = '';
+if ($current_term && !empty($current_term->name)) {
+    $catalog_h1 = $current_term->name;
+} elseif (is_shop()) {
+    $catalog_h1 = get_the_title(wc_get_page_id('shop'));
+}
+?>
+<?php if ($catalog_h1) : ?>
+    <div class="block--wrapper">
+        <div class="block--title showInUp">
+            <h1 class="block--title_title"><?php echo esc_html($catalog_h1); ?></h1>
+        </div>
+    </div>
+<?php endif; ?>
 
 <!-- Catalog -->
 <div class="block catalog" id="azs-catalog" data-base-cat="<?php echo esc_attr($base_cat_id); ?>">
@@ -115,15 +132,15 @@ if ($current_term && !empty($current_term->description)) {
             <div class="category -desk">
                 <div class="category--wrapper">
                     <a class="item"
-                       href="<?php echo esc_url($shop_url); ?>">
+                        href="<?php echo esc_url($shop_url); ?>">
                         <div class="button"><span>СМОТРЕТЬ ВСЕ</span></div>
                     </a>
                     <a class="item<?php echo $is_new_f ? ' is-active' : ''; ?>"
-                       href="<?php echo esc_url($shop_url); ?>" data-sidebar-new>
+                        href="<?php echo esc_url($shop_url); ?>" data-sidebar-new>
                         <div class="button"><span>Новинки</span></div>
                     </a>
                     <a class="item<?php echo $is_sale_f ? ' is-active' : ''; ?>"
-                       href="<?php echo esc_url($shop_url); ?>" data-sidebar-sale>
+                        href="<?php echo esc_url($shop_url); ?>" data-sidebar-sale>
                         <div class="button"><span>Акции</span></div>
                     </a>
 
@@ -139,34 +156,73 @@ if ($current_term && !empty($current_term->description)) {
 
                         $cat_active = $current_term && ($current_term->term_id === $cat->term_id || term_is_ancestor_of($cat->term_id, $current_term->term_id, 'product_cat'));
 
+                        $category_acf_id = 'product_cat_'.$cat->term_id;
+                        $category_short_name = get_field('category_short_name', $category_acf_id);
+
+
+
                         if (empty($children)) : ?>
                             <a class="item<?php echo $cat_active ? ' is-active' : ''; ?>"
-                               href="<?php echo esc_url(get_term_link($cat)); ?>">
-                                <div class="button"><span><?php echo esc_html($cat->name); ?></span></div>
+                                href="<?php echo esc_url(get_term_link($cat)); ?>">
+
+                                <div class="button">
+                                    <span>
+                                    <?if(!empty($category_short_name)):?>
+                                        <?php echo esc_html($category_short_name); ?>
+                                    <?else:?>
+                                        <?php echo esc_html($cat->name); ?>
+                                    <?endif?>
+                                    </span>
+                                </div>
                             </a>
                         <?php else : ?>
                             <div class="item item-dropdown<?php echo $cat_active ? ' is_open' : ''; ?>">
                                 <div class="button">
-                                    <span><?php echo esc_html($cat->name); ?></span><span class="icon-drop-down"></span>
+                                    <span>
+                                    <?if(!empty($category_short_name)):?>
+                                        <?php echo esc_html($category_short_name); ?>
+                                    <?else:?>
+                                        <?php echo esc_html($cat->name); ?>
+                                    <?endif?>
+                                    </span>
+                                    <span class="icon-drop-down"></span>
                                 </div>
                                 <div class="dropdown">
                                     <div class="dropdown__wrapper">
                                         <a class="dropdown__item link<?php echo ($current_term && (int) $current_term->term_id === (int) $cat->term_id) ? ' is-active' : ''; ?>"
-                                           href="<?php echo esc_url(get_term_link($cat)); ?>">
-                                            Все <?php echo esc_html(mb_strtolower($cat->name)); ?>
+                                            href="<?php echo esc_url(get_term_link($cat)); ?>">
+                                            Все 
+                                            <?if(!empty($category_short_name)):?>
+                                                <?php echo esc_html(mb_strtolower($category_short_name)); ?>
+                                            <?else:?>
+                                                <?php echo esc_html(mb_strtolower($cat->name)); ?>
+                                            <?endif?>
                                         </a>
                                         <?php foreach ($children as $child) :
                                             $child_active = $current_term && (int) $current_term->term_id === (int) $child->term_id;
                                         ?>
+
+                                            <?//
+                                            $category_acf_id = 'product_cat_'.$child->term_id;
+                                            $category_short_name = get_field('category_short_name', $category_acf_id);
+                                            ?>
+
                                             <a class="dropdown__item link<?php echo $child_active ? ' is-active' : ''; ?>"
-                                               href="<?php echo esc_url(get_term_link($child)); ?>">
-                                                <?php echo esc_html($child->name); ?>
+                                                href="<?php echo esc_url(get_term_link($child)); ?>">
+
+                                                <?if(!empty($category_short_name)):?>
+                                                    <?php echo esc_html($category_short_name); ?>
+                                                <?else:?>
+                                                    <?php echo esc_html($child->name); ?>
+                                                <?endif?>
+
+                                                
                                             </a>
                                         <?php endforeach; ?>
                                     </div>
                                 </div>
                             </div>
-                        <?php endif;
+                    <?php endif;
                     endforeach; ?>
                 </div>
             </div>
@@ -180,7 +236,7 @@ if ($current_term && !empty($current_term->description)) {
                 <div class="search">
                     <div class="search__wrapper">
                         <input type="text" placeholder="Артикул или название товара"
-                               value="<?php echo esc_attr($url_search); ?>"/>
+                            value="<?php echo esc_attr($url_search); ?>" />
                     </div>
                     <div class="button button-filled button-secondary"><span class="icon-search"></span></div>
                 </div>
@@ -214,8 +270,8 @@ if ($current_term && !empty($current_term->description)) {
                                                 <div class="filter__group_list">
                                                     <?php foreach ($children as $child) : ?>
                                                         <div class="filter__content_item filter__content_item--option"
-                                                             data-slug="<?php echo esc_attr($child->term_id); ?>"
-                                                             data-filter-type="category">
+                                                            data-slug="<?php echo esc_attr($child->term_id); ?>"
+                                                            data-filter-type="category">
                                                             <?php echo esc_html($child->name); ?>
                                                         </div>
                                                     <?php endforeach; ?>
@@ -223,55 +279,55 @@ if ($current_term && !empty($current_term->description)) {
                                             </div>
                                         <?php else : ?>
                                             <div class="filter__content_item filter__content_item--option"
-                                                 data-slug="<?php echo esc_attr($cat->term_id); ?>"
-                                                 data-filter-type="category">
+                                                data-slug="<?php echo esc_attr($cat->term_id); ?>"
+                                                data-filter-type="category">
                                                 <?php echo esc_html($cat->name); ?>
                                             </div>
-                                        <?php endif;
+                                    <?php endif;
                                     endforeach; ?>
                                 </div>
                             </div>
 
                             <?php if (!empty($liquid_terms) && !is_wp_error($liquid_terms)) : ?>
-                            <!-- Filter: Вид жидкости -->
-                            <div class="filter__item">
-                                <div class="filter__button filter__button_trigger" role="button" aria-expanded="false">
-                                    <span>Вид жидкости</span><span class="filter__button_icon icon-drop-down"></span>
+                                <!-- Filter: Вид жидкости -->
+                                <div class="filter__item">
+                                    <div class="filter__button filter__button_trigger" role="button" aria-expanded="false">
+                                        <span>Вид жидкости</span><span class="filter__button_icon icon-drop-down"></span>
+                                    </div>
+                                    <div class="filter__content" aria-hidden="true">
+                                        <?php foreach ($liquid_terms as $term) : ?>
+                                            <div class="filter__content_item filter__content_item--option"
+                                                data-slug="<?php echo esc_attr($term->term_id); ?>"
+                                                data-filter-type="liquid_type">
+                                                <?php echo esc_html($term->name); ?>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
                                 </div>
-                                <div class="filter__content" aria-hidden="true">
-                                    <?php foreach ($liquid_terms as $term) : ?>
-                                        <div class="filter__content_item filter__content_item--option"
-                                             data-slug="<?php echo esc_attr($term->term_id); ?>"
-                                             data-filter-type="liquid_type">
-                                            <?php echo esc_html($term->name); ?>
-                                        </div>
-                                    <?php endforeach; ?>
-                                </div>
-                            </div>
                             <?php endif; ?>
 
                             <?php if (!empty($mfr_terms) && !is_wp_error($mfr_terms)) : ?>
-                            <!-- Filter: Производитель -->
-                            <div class="filter__item">
-                                <div class="filter__button filter__button_trigger" role="button" aria-expanded="false">
-                                    <span>Производитель</span><span class="filter__button_icon icon-drop-down"></span>
+                                <!-- Filter: Производитель -->
+                                <div class="filter__item">
+                                    <div class="filter__button filter__button_trigger" role="button" aria-expanded="false">
+                                        <span>Производитель</span><span class="filter__button_icon icon-drop-down"></span>
+                                    </div>
+                                    <div class="filter__content" aria-hidden="true">
+                                        <?php foreach ($mfr_terms as $term) : ?>
+                                            <div class="filter__content_item filter__content_item--option"
+                                                data-slug="<?php echo esc_attr($term->term_id); ?>"
+                                                data-filter-type="manufacturer">
+                                                <?php echo esc_html($term->name); ?>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
                                 </div>
-                                <div class="filter__content" aria-hidden="true">
-                                    <?php foreach ($mfr_terms as $term) : ?>
-                                        <div class="filter__content_item filter__content_item--option"
-                                             data-slug="<?php echo esc_attr($term->term_id); ?>"
-                                             data-filter-type="manufacturer">
-                                            <?php echo esc_html($term->name); ?>
-                                        </div>
-                                    <?php endforeach; ?>
-                                </div>
-                            </div>
                             <?php endif; ?>
 
                         </div>
                         <div class="filter__action">
                             <div class="button button-filled button-secondary">
-                                <span>Показать товар</span><span class="icon-arrow-right"></span>
+                                <span>Применить фильтр</span><span class="icon-arrow-right"></span>
                             </div>
                         </div>
                     </div>
@@ -282,25 +338,25 @@ if ($current_term && !empty($current_term->description)) {
                     <div class="sort--wrapper">
                         <div class="item">
                             <label>
-                                <input type="radio" name="sort" value="default"<?php checked($url_sort, 'default'); ?>>
+                                <input type="radio" name="sort" value="default" <?php checked($url_sort, 'default'); ?>>
                                 <div class="radio"></div>
                             </label><span>По умолчанию</span>
                         </div>
                         <div class="item">
                             <label>
-                                <input type="radio" name="sort" value="new"<?php checked($url_sort, 'new'); ?>>
+                                <input type="radio" name="sort" value="new" <?php checked($url_sort, 'new'); ?>>
                                 <div class="radio"></div>
                             </label><span>По новизне</span>
                         </div>
                         <div class="item">
                             <label>
-                                <input type="radio" name="sort" value="price-asc"<?php checked($url_sort, 'price-asc'); ?>>
+                                <input type="radio" name="sort" value="price-asc" <?php checked($url_sort, 'price-asc'); ?>>
                                 <div class="radio"></div>
                             </label><span>По возрастанию цены</span>
                         </div>
                         <div class="item">
                             <label>
-                                <input type="radio" name="sort" value="price-desc"<?php checked($url_sort, 'price-desc'); ?>>
+                                <input type="radio" name="sort" value="price-desc" <?php checked($url_sort, 'price-desc'); ?>>
                                 <div class="radio"></div>
                             </label><span>По убыванию цены</span>
                         </div>
@@ -324,7 +380,9 @@ if ($current_term && !empty($current_term->description)) {
                 endwhile;
                 wp_reset_postdata();
             else : ?>
-                <div class="catalog-empty"><p>Товары не найдены</p></div>
+                <div class="catalog-empty">
+                    <p>Товары не найдены</p>
+                </div>
             <?php endif; ?>
         </div>
 
@@ -335,13 +393,48 @@ if ($current_term && !empty($current_term->description)) {
 </div>
 
 <?php if ($seo_content) : ?>
-<div class="block html-code">
-    <div class="block--wrapper">
-        <div class="block--content is_cascade">
-            <?php echo wp_kses_post($seo_content); ?>
+    <div class="block html-code">
+        <div class="block--wrapper">
+            <div class="block--content is_cascade">
+                <?php echo wp_kses_post($seo_content); ?>
+            </div>
         </div>
     </div>
-</div>
 <?php endif; ?>
+
+<?// 
+$current_url = get_self_link();
+$page_title = wp_get_document_title();
+
+$term_id = $base_cat_id;
+$yoast_tax_meta = get_option( 'wpseo_taxonomy_meta' );
+$meta_desc = '';
+
+if (!empty($yoast_tax_meta['product_cat'][$term_id]['wpseo_desc'])) {
+	$meta_desc = $yoast_tax_meta['product_cat'][$term_id]['wpseo_desc'];
+}
+?>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": "<?=$current_url?>#webpage",
+  "name": "<?=$page_title?>",
+  "description": "<?=$meta_desc?>",
+  "url": "<?=$current_url?>",
+  "about": {
+    "@id": "<?=$current_url?>"
+  },
+  "breadcrumb": {
+    "@id": "<?=$current_url?>#breadcrumb"
+  },
+  "inLanguage": "ru-RU",
+  "isPartOf": {
+    "@id": "https://piusi-raasm.ru/#website"
+  }
+}
+</script>
 
 <?php get_footer(); ?>

@@ -1129,6 +1129,119 @@ h1, h2, h3, h4, h5, h6 {
     margin: var(--s-24) auto 0;
   }
 }
+.footer__subscribe {
+  width: 100%;
+  background-color: var(--bg-secondary);
+  padding: var(--s-24) var(--s-8);
+}
+@media (min-width: 641px) {
+  .footer__subscribe {
+    padding: var(--s-32);
+  }
+}
+.footer__subscribe-inner {
+  width: 100%;
+}
+.footer__subscribe-form.form {
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  gap: var(--s-16);
+}
+.footer__subscribe-top {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-align: stretch;
+      -ms-flex-align: stretch;
+          align-items: stretch;
+  gap: var(--s-8);
+  width: 100%;
+}
+@media (min-width: 641px) {
+  .footer__subscribe-top {
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: row;
+            flex-direction: row;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    gap: var(--s-12);
+    width: auto;
+  }
+}
+.footer__subscribe-title {
+  font-size: var(--s-16);
+  font-weight: 500;
+  margin: 0;
+  text-align: center;
+}
+@media (min-width: 641px) {
+  .footer__subscribe-title {
+    font-size: var(--s-18);
+    white-space: nowrap;
+    text-align: left;
+  }
+}
+.footer__subscribe-top .form--input {
+  margin-top: 0;
+}
+@media (min-width: 641px) {
+  .footer__subscribe-top .form--input {
+    width: calc(var(--u-ritmo-verticale) * 45);
+    -ms-flex-negative: 0;
+        flex-shrink: 0;
+  }
+}
+.footer__subscribe-top .button {
+  width: 100%;
+  -ms-flex-negative: 0;
+      flex-shrink: 0;
+}
+@media (min-width: 641px) {
+  .footer__subscribe-top .button {
+    width: auto;
+  }
+}
+.footer__subscribe-consents {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  gap: var(--s-8);
+  width: 100%;
+  max-width: calc(var(--u-ritmo-verticale) * 90);
+}
+@media (min-width: 641px) {
+  .footer__subscribe-consents {
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: row;
+            flex-direction: row;
+    gap: var(--s-24);
+  }
+}
+.footer__subscribe-consents .form--policy {
+  margin-top: 0;
+}
 
 .page-main .footer {
   background-color: var(--bg-secondary);
@@ -1811,7 +1924,15 @@ input[type=number] {
 }
 .form input[type=radio],
 .form input[type=checkbox] {
-  display: none;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
   -webkit-box-ordinal-group: 0;
       -ms-flex-order: -1;
           order: -1;
@@ -1861,6 +1982,25 @@ input[type=number] {
 }
 .form--policy a {
   text-decoration: underline;
+}
+
+.form--error {
+  display: none;
+  margin-top: 4px;
+  color: #eb3636;
+  font-size: var(--s-12);
+  line-height: var(--s-16);
+}
+.form--input.is-invalid .form--error,
+.form--policy.is-invalid .form--error {
+  display: block;
+}
+.form--input.is-invalid > input,
+.form--input.is-invalid textarea {
+  border-color: #eb3636;
+}
+.form--policy.is-invalid .input-checkbox span {
+  outline-color: #eb3636;
 }
 
 .is_cascade {
@@ -1995,7 +2135,10 @@ input[type=number] {
     bottom: var(--s-16);
   }
 }
-.block_banner .banner:not(.swiper-slide-active) {
+/* .block_banner .banner:not(.swiper-slide-active) {
+  pointer-events: none;
+} */
+ .block_banner.banner-group .banner:not(.swiper-slide-active) {
   pointer-events: none;
 }
 .block_banner .slider_controls {

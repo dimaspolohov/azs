@@ -117,3 +117,20 @@
 .catalog .block--elements{
     height: max-content;
 }
+.logo-wrapper  {
+	display:  flex;
+	flex-wrap:  wrap;
+}
+.logo-wrapper img  {
+	width:  auto;
+	height:  auto;
+	margin-bottom:  15px;
+	margin-right:  15px;
+}
+
+
+@media (min-width: 641px) {
+  .popup-cookies .popup--content {
+    max-width: calc(var(--u-ritmo-verticale) * 106) !important;
+  }
+}

@@ -480,8 +480,8 @@ function azs_cart_inline_js() {
                 var phoneVal = orderForm.querySelector('input[name="order_phone"]');
                 var btn      = orderForm.querySelector('[type="submit"]');
 
-                if (!nameVal || !phoneVal || !nameVal.value.trim() || !phoneVal.value.trim()) return;
-                if (btn) btn.disabled = true;
+/*                 if (!nameVal || !phoneVal || !nameVal.value.trim() || !phoneVal.value.trim()) return;
+ */                if (btn) btn.disabled = true;
 
                 var fd = new FormData();
                 fd.append('action', 'azs_place_order');

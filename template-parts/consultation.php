@@ -1,3 +1,7 @@
+<?php
+$title    = !empty($args['title']) ? $args['title'] : 'Нужна консультация?<br> Оставьте заявку ↓';
+$subtitle = !empty($args['subtitle']) ? $args['subtitle'] : 'Поможем выбрать, оформить и установить оборудование';
+?>
 <div class="block block_banner block_banner-form">
     <div class="block--wrapper">
         <div class="banner">
@@ -9,8 +13,8 @@
             </div>
             <div class="block--content">
                 <div class="banner--title showInUp">
-                    <p>Нужна консультация?<br> Оставьте заявку ↓</p>
-                    <span>Поможем выбрать, оформить и установить оборудование</span>
+                    <p><?php echo wp_kses_post($title); ?></p>
+                    <span><?php echo esc_html($subtitle); ?></span>
                 </div>
                 <div class="banner--form">
                     <form class="form" method="post" data-form-type="consultation" novalidate>

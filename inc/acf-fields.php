@@ -416,6 +416,71 @@ function azs_register_acf_fields() {
     ));
 
     // =============================================
+    // PRODUCT CATEGORY — CONSULTATION FORM
+    // =============================================
+    acf_add_local_field_group(array(
+        'key'    => 'group_product_cat_form',
+        'title'  => 'Форма консультации на категории',
+        'fields' => array(
+            array(
+                'key'           => 'field_cat_show_form',
+                'label'         => 'Показать форму',
+                'name'          => 'category_show_form',
+                'type'          => 'true_false',
+                'ui'            => 1,
+                'default_value' => 0,
+                'instructions'  => 'Вывести баннер с формой после SEO-текста категории',
+            ),
+            array(
+                'key'               => 'field_cat_form_title',
+                'label'             => 'Заголовок формы',
+                'name'              => 'category_form_title',
+                'type'              => 'textarea',
+                'rows'              => 2,
+                'new_lines'         => 'br',
+                'instructions'      => 'Можно использовать перенос строки',
+                'conditional_logic' => array(
+                    array(
+                        array(
+                            'field'    => 'field_cat_show_form',
+                            'operator' => '==',
+                            'value'    => '1',
+                        ),
+                    ),
+                ),
+            ),
+            array(
+                'key'               => 'field_cat_form_subtitle',
+                'label'             => 'Подзаголовок формы',
+                'name'              => 'category_form_subtitle',
+                'type'              => 'textarea',
+                'rows'              => 3,
+                'conditional_logic' => array(
+                    array(
+                        array(
+                            'field'    => 'field_cat_show_form',
+                            'operator' => '==',
+                            'value'    => '1',
+                        ),
+                    ),
+                ),
+            ),
+        ),
+        'location' => array(
+            array(
+                array(
+                    'param'    => 'taxonomy',
+                    'operator' => '==',
+                    'value'    => 'product_cat',
+                ),
+            ),
+        ),
+        'menu_order' => 20,
+        'position'   => 'normal',
+        'style'      => 'default',
+    ));
+
+    // =============================================
     // REVIEW CPT FIELDS
     // =============================================
     acf_add_local_field_group(array(

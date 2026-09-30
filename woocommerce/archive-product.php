@@ -402,6 +402,20 @@ if ($current_term && !empty($current_term->name)) {
     </div>
 <?php endif; ?>
 
+<?php
+if ($current_term && function_exists('get_field')) {
+    $cat_acf_id = 'product_cat_' . (int) $current_term->term_id;
+    if (get_field('category_show_form', $cat_acf_id)) {
+        $form_title    = get_field('category_form_title', $cat_acf_id);
+        $form_subtitle = get_field('category_form_subtitle', $cat_acf_id);
+        get_template_part('template-parts/consultation', null, array(
+            'title'    => $form_title ?: null,
+            'subtitle' => $form_subtitle ?: null,
+        ));
+    }
+}
+?>
+
 <?// 
 $current_url = get_self_link();
 $page_title = wp_get_document_title();

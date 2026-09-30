@@ -863,9 +863,19 @@ function azs_article_tabs_script()
                 return true;
             }
 
+            function scrollToTab(slug) {
+                if (window.azsScrollToElement) {
+                    window.azsScrollToElement(document.querySelector('[data-article-content="' + slug + '"]'));
+                }
+            }
+
+            function hashSlug() {
+                return decodeURIComponent(location.hash.replace('#', ''));
+            }
+
             function onHashChange() {
-                var hash = location.hash.replace('#', '');
-                if (hash) activateTab(decodeURIComponent(hash));
+                var slug = hashSlug();
+                if (slug && activateTab(slug)) scrollToTab(slug);
             }
 
             buttons.forEach(function(btn) {
@@ -874,10 +884,27 @@ function azs_article_tabs_script()
                     var slug = btn.getAttribute('data-article-tab');
                     activateTab(slug);
                     history.replaceState(null, '', '#' + slug);
+                    scrollToTab(slug);
                 });
             });
 
-            if (location.hash) onHashChange();
+            // Header and mobile menu links to a tab of this same page: switch the tab here
+            // instead of letting the browser jump to the anchor (it lands under the sticky header)
+            document.addEventListener('click', function(e) {
+                var link = e.target.closest('a[href*="#"]');
+                if (!link || link.hasAttribute('data-article-tab')) return;
+                if (link.pathname !== location.pathname || !link.hash) return;
+                var slug = decodeURIComponent(link.hash.replace('#', ''));
+                if (!activateTab(slug)) return;
+                e.preventDefault();
+                history.replaceState(null, '', '#' + slug);
+                if (typeof PopupManager !== 'undefined' && link.closest('[data-popup="popup_menu"]')) {
+                    PopupManager.close('popup_menu');
+                }
+                scrollToTab(slug);
+            });
+
+            if (location.hash) activateTab(hashSlug());
             window.addEventListener('hashchange', onHashChange);
         })();
     </script>

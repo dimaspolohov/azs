@@ -57,6 +57,24 @@ if(document.querySelector('.header')){
 
 }
 
+// Scrolls up so that the element's top sits right below the sticky header.
+// Does nothing when the element's top is already visible.
+window.azsScrollToElement = function (el) {
+  if (!el) return;
+  const header = document.querySelector('.header');
+  const offset = (header ? header.offsetHeight : 0) + 16;
+  const top = Math.max(0, Math.round(el.getBoundingClientRect().top + window.scrollY - offset));
+  if (window.scrollY <= top) return;
+
+  if (window.lenis) {
+    // Lenis ignores a target equal to its stored position, which is stale if it missed a native scroll
+    if (!window.lenis.isScrolling) window.lenis.scrollTo(window.scrollY, { immediate: true });
+    window.lenis.scrollTo(top);
+  } else {
+    window.scrollTo({ top: top, behavior: 'smooth' });
+  }
+};
+
 Inputmask({
   mask: "+7 999 999 99 99",
   inputmode: 'numeric',

@@ -767,7 +767,6 @@ function azs_catalog_inline_js() {
             e.preventDefault();
             state.page = parseInt(btn.dataset.page, 10) || 1;
             loadProducts();
-            catalog.scrollIntoView({behavior: 'smooth', block: 'start'});
         });
 
         // --- Tags ---
@@ -978,6 +977,8 @@ function azs_catalog_inline_js() {
                         var wrapper = catalog.querySelector('.block--wrapper');
                         if (wrapper) wrapper.insertAdjacentHTML('beforeend', res.data.pagination);
                     }
+                    // Scroll once the new cards are in place, so the page height no longer changes mid-scroll
+                    if (window.azsScrollToElement) window.azsScrollToElement(catalog);
                 })
                 .catch(function() { if (productsEl) productsEl.style.opacity = ''; });
 

@@ -134,3 +134,145 @@
     max-width: calc(var(--u-ritmo-verticale) * 106) !important;
   }
 }
+
+
+
+
+
+.block--subcats .subcat__body {color:#0A0A0A;padding:10px 20px;display:inline-flex;gap:10px;border:1px solid #eee;background:#fff}
+.block--subcats .subcat__body:hover {border:1px solid #068411;background:#068411;color:#fff}
+.block--subcats .subcat__body:hover .subcat__title {color:#fff}
+.block--subcats .subcat__count  {color:#ccc}
+.block--subcats .subcat__body:hover  .subcat__count  {color:#ccc}
+
+.block--subcats .subcats {
+  display: flex;
+  flex-wrap: nowrap; 
+  overflow-x: auto;
+  gap: 8px;         
+  padding-bottom: 8px; 
+}
+.block--subcats .subcat {
+  flex-shrink: 0; 
+  white-space: nowrap;
+}
+
+.catalog-layout__content, 
+.block--subcats {
+  min-width: 0; 
+  overflow: hidden;
+  width: 100%;/
+}
+
+
+.block--elements { display: grid;
+  grid-template-columns: repeat(3, 1fr); 
+  gap: 10px;}
+.block--elements .card {border:1px solid #ddd}
+
+
+    .azs-popup {
+        position: fixed; inset: 0; z-index: 99999;
+        display: none;
+        align-items: center; justify-content: center;
+        padding: 20px;
+    }
+
+    /* открытое состояние: классом (JS) или :target (без JS) */
+    .azs-popup.is-open,
+    .azs-popup:target { display: flex !important; }
+
+    .azs-popup__overlay {
+        position: absolute; inset: 0; z-index: 0;
+        background: rgba(17, 17, 17, .55);
+    }
+
+    .azs-popup__dialog {
+        position: relative; z-index: 1;
+        display: flex; flex-direction: column;   /* шапка + прокручиваемое тело */
+        width: min(1240px, 100%);
+        max-height: min(720px, calc(100vh - 40px));
+        overflow: hidden;                        /* скроллится только .azs-popup__content */
+        padding: 0;
+        border-radius: 16px;
+        background: #fff;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, .28);
+    }
+    .azs-popup__dialog:focus { outline: none; }
+
+    /* ----- закреплённая шапка ----- */
+    .azs-popup__head {
+        flex: 0 0 auto;
+        position: relative;
+        padding: 22px 64px 14px 32px;
+        border-bottom: 1px solid rgba(0, 0, 0, .08);
+        background: #fff;
+    }
+
+    .azs-popup__title { margin: 0; font-size: 22px; font-weight: 700; line-height: 1.25; }
+
+    .azs-popup__close {
+        position: absolute; top: 12px; right: 12px;
+        width: 40px; height: 40px;
+        display: flex; align-items: center; justify-content: center;
+        border-radius: 50%;
+        color: inherit; text-decoration: none;
+        font-size: 26px; line-height: 1;
+        transition: background .15s ease;
+    }
+    .azs-popup__close:hover,
+    .azs-popup__close:focus-visible { background: rgba(0, 0, 0, .07); }
+
+    /* ----- прокручиваемое тело ----- */
+    .azs-popup__content {
+        flex: 1 1 auto;
+        min-height: 0;                 /* обязательно, иначе flex не даст скролл */
+        overflow-y: auto;
+        overscroll-behavior: contain;  /* не прокручивать страницу за окном */
+        -webkit-overflow-scrolling: touch;
+        padding: 18px 32px 28px;
+        font-size: 15px; line-height: 1.55;
+    }
+
+    .azs-popup__content > *:first-child { margin-top: 0; }
+    .azs-popup__content > *:last-child { margin-bottom: 0; }
+    .azs-popup__content p { margin: 0 0 12px; }
+    .azs-popup__content strong { font-weight: 700; }
+    .azs-popup__content a { color: inherit; text-decoration: underline; }
+    .azs-popup__content a:hover { text-decoration: none; }
+
+    .azs-popup__content ol { margin: 0 0 16px; padding-left: 20px; }
+    .azs-popup__content ol li { margin: 0 0 6px; }
+
+    /* логотипы платёжных систем */
+    .azs-popup__content .logo-wrapper {
+        display: flex; flex-wrap: wrap; align-items: center;
+        gap: 10px 14px;
+        margin: 0 0 18px;
+    }
+    .azs-popup__content .logo-wrapper img {
+        display: block;
+        width: auto; height: 40px;
+        max-width: 100%;
+    }
+
+    /* тонкий скроллбар (WebKit / Firefox) */
+    .azs-popup__content::-webkit-scrollbar { width: 8px; }
+    .azs-popup__content::-webkit-scrollbar-track { background: transparent; }
+    .azs-popup__content::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, .2); border-radius: 4px;
+    }
+    .azs-popup__content::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, .32); }
+    .azs-popup__content { scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, .2) transparent; }
+
+    /* пока окно открыто — страница не скроллится */
+    body.azs-popup-opened { overflow: hidden; }
+
+    @media (max-width: 576px) {
+        .azs-popup { padding: 12px; }
+        .azs-popup__dialog { max-height: calc(100vh - 24px); }
+        .azs-popup__head { padding: 18px 56px 12px 18px; }
+        .azs-popup__content { padding: 14px 18px 22px; font-size: 14px; }
+        .azs-popup__title { font-size: 19px; }
+        .azs-popup__content .logo-wrapper img { height: 32px; }
+    }

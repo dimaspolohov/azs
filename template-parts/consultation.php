@@ -28,11 +28,21 @@ $subtitle = !empty($args['subtitle']) ? $args['subtitle'] : 'Поможем вы
                             <span>Заказать звонок</span><span class="icon-arrow-right"></span>
                         </button>
                         <div class="form--policy">
-                            <label class="form--input input-checkbox">
-                                <input type="checkbox" name="privacy" value="1" data-validate="privacy" required><span></span>
-                            </label>
-                            <span>Нажимая на кнопку «Оставить заявку», вы соглашаетесь на обработку персональных данных в соответствии с <a href="/privacy-policy/">политикой обработки персональных данных</a></span>
-                        </div>
+                    <label class="form--input input-checkbox">
+                        <input type="checkbox" name="privacy" value="1" data-validate="privacy" required><span></span>
+                    </label>
+                    <span>Согласен на обработку персональных данных в соответствии с
+                        <a href="<?php echo esc_url($privacy_url); ?>" target="_blank" rel="noopener">Политикой конфиденциальности</a>
+                    </span>
+                </div>
+                <div class="form--policy">
+                    <label class="form--input input-checkbox">
+						<input type="checkbox" name="mailing" value="1" data-validate="mailing" required><span></span>
+                    </label>
+                    <span>Согласен на получение рекламных и информационных сообщений в соответствии с
+                        <a href="<?php echo esc_url($offer_url); ?>">Офертой</a>
+                    </span>
+                </div>
                     </form>
                 </div>
             </div>

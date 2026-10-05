@@ -228,6 +228,94 @@ if ($current_term && !empty($current_term->name)) {
             </div>
         </div>
 
+
+
+
+
+<?php
+/* ===== ПЛИТКА ВЛОЖЕННЫХ КАТЕГОРИЙ ===== */
+$tile_show_count  = true;                     // показывать количество товаров
+$tile_hide_empty  = true;                     // скрывать категории без товаров
+$tile_count_deep  = true;                     // считать товары и во вложенных подкатегориях
+$tile_placeholder = true;                     // заглушка WC, если у категории нет картинки
+$tile_img_size    = 'woocommerce_thumbnail';  // размер картинки
+$tile_columns     = 4;                        // колонок на десктопе
+
+$tiles = array();
+
+if ($current_term) {   // на главной каталога $current_term пустой → блок ничего не выведет
+    $tile_terms = get_terms(array(
+        'taxonomy'   => 'product_cat',
+        'parent'     => (int) $current_term->term_id, // прямые дочерние; все уровни — 'child_of'
+        'hide_empty' => false,
+        'exclude'    => $exclude_cat_ids,
+        'orderby'    => 'menu_order',                 // тот же порядок, что в сайдбаре
+        'order'      => 'ASC',
+    ));
+
+    if (!is_wp_error($tile_terms)) {
+        foreach ($tile_terms as $tile_term) {
+            $tile_count = (int) $tile_term->count;    // свои товары
+
+            if ($tile_count_deep) {                   // + товары во вложенных
+                $tile_deep = get_terms(array(
+                    'taxonomy' => 'product_cat', 'child_of' => (int) $tile_term->term_id,
+                    'hide_empty' => true, 'fields' => 'all',
+                ));
+                if (!is_wp_error($tile_deep)) {
+                    foreach ($tile_deep as $t) { $tile_count += (int) $t->count; }
+                }
+            }
+
+            if ($tile_hide_empty && $tile_count < 1) continue;
+
+            $tile_link = get_term_link($tile_term);
+            if (is_wp_error($tile_link)) continue;
+
+            $tile_short_name = function_exists('get_field')
+                ? get_field('category_short_name', 'product_cat_' . $tile_term->term_id) : '';
+
+            $tile_thumb_id = (int) get_term_meta($tile_term->term_id, 'thumbnail_id', true);
+            $tile_img = $tile_thumb_id
+                ? wp_get_attachment_image_url($tile_thumb_id, $tile_img_size)
+                : ($tile_placeholder ? wc_placeholder_img_src($tile_img_size) : '');
+
+            $tiles[] = array(
+                'url'   => $tile_link,
+                'title' => $tile_short_name ? $tile_short_name : $tile_term->name,
+                'img'   => $tile_img ? $tile_img : '',
+                'count' => $tile_count,
+            );
+        }
+    }
+}
+?>
+
+<?php if (!empty($tiles)) : ?>
+    <!-- ===== Плитка вложенных категорий ===== -->
+    <div class="block--subcats">
+        <div class="subcats<?php echo $tile_show_count ? ' is-with-count' : ''; ?>"
+             style="--subcats-columns:<?php echo (int) $tile_columns; ?>">
+            <?php foreach ($tiles as $tile) : ?>
+                <a class="subcat" href="<?php echo esc_url($tile['url']); ?>">
+                    <span class="subcat__body">
+                        <span class="subcat__title"><?php echo esc_html($tile['title']); ?></span>
+                        <?php if ($tile_show_count) : ?><span class="subcat__count"><?php echo esc_html($tile['count']); ?></span><?php endif; ?>
+                    </span>
+                </a>
+            <?php endforeach; ?>
+        </div>
+    </div>
+<?php endif; ?>
+
+
+
+
+
+
+
+
+
         <!-- ===== Filters ===== -->
         <div class="block--filters">
 
@@ -241,6 +329,7 @@ if ($current_term && !empty($current_term->name)) {
                     <div class="button button-filled button-secondary"><span class="icon-search"></span></div>
                 </div>
             </div>
+
 
             <!-- Filter bar + Sort -->
             <div class="block--actions">
@@ -369,8 +458,15 @@ if ($current_term && !empty($current_term->name)) {
             </div>
         </div>
 
+
+
+
         <!-- ===== Active filter tags ===== -->
         <div class="block--tags" id="azs-tags"></div>
+
+
+
+
 
         <!-- ===== Product grid ===== -->
         <div class="block--elements" id="azs-products">

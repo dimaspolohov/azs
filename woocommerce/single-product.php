@@ -145,7 +145,61 @@ while (have_posts()) : the_post();
                 <?php else : ?>
                 <button class="button button-outlined azs-add-to-cart" type="button" data-product-id="<?php echo esc_attr($product_id); ?>" data-product-name="<?php echo esc_attr($title); ?>" data-product-image="<?php echo esc_url($featured_url); ?>" data-product-sku="<?php echo esc_attr($sku); ?>"><span>Добавить в корзину</span><span class="icon-arrow-right"></span></button>
                 <?php endif; ?>
-                <a class="link" href="<?php echo esc_url(azs_get_payment_delivery_url()); ?>"><span>Оплата и доставка</span></a>
+
+
+                <!--a class="link" href="<?php echo esc_url(azs_get_payment_delivery_url()); ?>"><span>Оплата и доставка</span></a-->
+
+
+
+
+
+
+<a class="link js-popup-open" href="#azs-popup-delivery" data-popup="azs-popup-delivery"
+   aria-haspopup="dialog"><span>Оплата и доставка</span></a>
+
+
+<div class="accordion" >
+                    <div class="accordion--button">
+                        <span class="icon-plus"></span>
+                        <p class="accordion--button_text" >Способы доставки</p>
+                    </div>
+                    <div class="accordion--content" >
+<ul>
+<li>Самовывоз (МСК)</li>
+<li>Доставка по Москве службой доставки ООО «ТД «Все для АЗС» (в течение 5 рабочих дней с момента 100% оплаты счёта)</li>
+<li>Транспортные компании (Деловые Линии, ПЭК, СДЭК и др.), стоимость рассчитывается индивидуально</li>
+</ul>
+
+            
+                    </div>
+                </div>
+
+
+
+<div class="accordion" >
+                    <div class="accordion--button">
+                        <span class="icon-plus"></span>
+                        <p class="accordion--button_text" >Способы оплаты</p>
+                    </div>
+                    <div class="accordion--content" >
+<ul>
+<li>Безналичный расчёт по счёту (для юр. лиц и ИП)</li>
+<li>Онлайн-оплата через Robokassa (для физ. лиц)</li>
+<li>Покупка через Ozon (для физ. лиц)</li>
+
+</ul>
+
+            
+                    </div>
+                </div>
+
+
+
+
+
+
+
+
                 <?php else : ?>
                 <div class="button button-filled button-accent" data-openpopup="popup_form"><span>Сообщить о поступлении</span><span class="icon-arrow-right"></span></div>
                 <?php endif; ?>
@@ -232,6 +286,153 @@ while (have_posts()) : the_post();
 
 <?php endwhile; ?>
 
+
+
+
+
+
+<div class="catalog">
+<!-- тут вывести карточки товаров -->
+<?php
+$rec_limit           = 4;                                        // сколько карточек вывести
+$rec_title           = 'Рекомендуемые товары';                   // заголовок блока ('' = без заголовка)
+$rec_orderby         = array('menu_order' => 'ASC', 'title' => 'ASC'); // порядок как «По умолчанию» в каталоге
+$rec_in_stock_only   = false;                                    // true = только товары в наличии
+$rec_hide_current    = true;                                     // исключить сам текущий товар
+$rec_fallback_parent = false;                                    // true = если в категории меньше 3 товаров, добрать из родительской
+$rec_use_theme_card  = true;                                     // true = карточка функцией темы azs_render_product_card()
+                                                                 // false = простая статичная карточка (WC API)
+
+$rec_product_id = isset($product_id) ? (int) $product_id : (int) get_queried_object_id();
+
+/* Категория текущего товара — та же, что и в хлебных крошках */
+$rec_term = (isset($primary_term) && $primary_term instanceof WP_Term) ? $primary_term : null;
+
+if (!$rec_term && $rec_product_id) {
+    $rec_terms = wp_get_post_terms($rec_product_id, 'product_cat');
+    if (!is_wp_error($rec_terms) && !empty($rec_terms)) {
+        $rec_term = $rec_terms[0];
+    }
+}
+
+if ($rec_product_id && $rec_term instanceof WP_Term) :
+
+    $rec_args = array(
+        'status'     => 'publish',
+        'limit'      => (int) $rec_limit,
+        'visibility' => 'catalog',  
+        'orderby'    => $rec_orderby,
+        'return'     => 'ids',
+    );
+
+    if ($rec_in_stock_only) {
+        $rec_args['stock_status'] = 'instock';
+    }
+    if ($rec_hide_current) {
+        $rec_args['exclude'] = array($rec_product_id);
+    }
+    $rec_ids = wc_get_products($rec_args + array('category' => array($rec_term->slug)));
+
+    /* добираем из родительской категории, если товаров не хватило */
+    if ($rec_fallback_parent && count($rec_ids) < $rec_limit && $rec_term->parent) {
+        $rec_parent = get_term((int) $rec_term->parent, 'product_cat');
+
+        if ($rec_parent instanceof WP_Term) {
+            $rec_exclude = isset($rec_args['exclude']) ? $rec_args['exclude'] : array();
+
+            $rec_ids = array_merge($rec_ids, wc_get_products(array_merge($rec_args, array(
+                'category' => array($rec_parent->slug),
+                'exclude'  => array_merge($rec_exclude, $rec_ids),
+                'limit'    => $rec_limit - count($rec_ids),
+            ))));
+        }
+    }
+
+    if (!empty($rec_ids)) :
+        ?>
+        <!-- ===== Рекомендуемые товары ===== -->
+        <div class="block block--recommended">
+            <div class="block--wrapper">
+
+                <?php if ($rec_title) : ?>
+                    <div class="block--title showInUp">
+                        <h2 class="block--title_title"><?php echo esc_html($rec_title); ?></h2>
+                    </div>
+                <?php endif; ?>
+
+                <div class="block--elements">
+                    <?php foreach ($rec_ids as $rec_id) : ?>
+
+                        <?php if ($rec_use_theme_card && function_exists('azs_render_product_card')) : ?>
+
+                            <?php
+                            /* Контекст как в цикле каталога: хелперы карточки могут
+                               смотреть на global $post / global $product. */
+                            $GLOBALS['post'] = get_post($rec_id);
+                            if (function_exists('wc_setup_product_data')) {
+                                wc_setup_product_data($rec_id); // принимает ID
+                            }
+                            echo azs_render_product_card($rec_id);
+                            ?>
+
+                        <?php else : ?>
+
+                            <?php
+                            /* Простая статичная карточка — на случай, если функции темы нет */
+                            $rec_product = wc_get_product($rec_id);
+
+                            if (!$rec_product) {
+                                continue;
+                            }
+
+                            $rec_price = $rec_product->get_price();
+                            ?>
+                            <a class="card" href="<?php echo esc_url($rec_product->get_permalink()); ?>">
+                                <div class="card--image">
+                                    <?php echo $rec_product->get_image('woocommerce_thumbnail', array('loading' => 'lazy')); ?>
+                                    <div class="card--labels">
+                                        <?php if (!$rec_product->is_in_stock()) : ?>
+                                            <span class="card--label card--label-noStock">нет в наличии</span>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                                <div class="card--content">
+                                    <div class="card--title">
+                                        <h3><?php echo esc_html($rec_product->get_name()); ?></h3>
+                                    </div>
+                                    <?php if ($rec_price !== '' && $rec_price !== null) : ?>
+                                        <div class="card--price">
+                                            <div class="card--price-current">
+                                                <span><?php echo esc_html(number_format((float) $rec_price, 0, '', ' ')); ?></span><span>₽</span>
+                                            </div>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            </a>
+
+                        <?php endif; ?>
+
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
+
+        <?php
+        /* Возвращаем контекст текущего товара (ниже идут JSON-LD и футер) */
+        $GLOBALS['post'] = get_post($rec_product_id);
+        if (function_exists('wc_setup_product_data')) {
+            wc_setup_product_data($rec_product_id);
+        }
+        ?>
+
+    <?php endif; ?>
+
+<?php endif; ?>
+<div>
+
+
+
+
 <?// 
 $current_url = get_self_link();
 ?>
@@ -303,6 +504,165 @@ $current_url = get_self_link();
       "price": <?=round((int)$price)?>
 <?endif?>
     }
+</script>
+
+
+
+
+<style>
+@media (min-width: 641px) {.accordion {padding: 0;}}
+@media (min-width: 641px) {.accordion--button .accordion--button_text {font-size: 16px;}}
+@media (min-width: 641px) {.accordion--content {font-size: 14px;}}
+</style>
+
+
+
+<div class="azs-popup" id="azs-popup-delivery" aria-hidden="true">
+
+    <!-- затемнение; href="#" закрывает окно даже без JS -->
+    <a class="azs-popup__overlay" href="#" data-popup-close aria-label="Закрыть окно" tabindex="-1"></a>
+
+    <div class="azs-popup__dialog" role="dialog" aria-modal="true"
+         aria-label="Оплата и доставка" tabindex="-1">
+
+        <!-- закреплённая шапка: не уезжает при прокрутке -->
+        <div class="azs-popup__head">
+            <div class="azs-popup__title">Оплата и доставка</div>
+            <a class="azs-popup__close" href="#" data-popup-close aria-label="Закрыть окно">&times;</a>
+        </div>
+
+        <!-- прокручиваемое тело окна -->
+        <div class="azs-popup__content">
+
+            <p><strong>Юридические лица</strong></p>
+
+            <p>«Торговый дом «Все для АЗС» работает с юридическими лицами и ИП. Мы оперативно формируем и отправляем вам счёт на указанный email. Для выставления счёта потребуются реквизиты вашей организации. Покупки необходимо оплатить на основании выставленного счета. Счет, выставляемый менеджером, действителен в течение 3 (трех) рабочих дней. Доставка товара планируется с того момента, как денежные средства поступят на счет компании.</p>
+
+            <p><strong>Физические лица</strong></p>
+
+            <p>Физические лица могут приобрести ассортимент нашей продукции на <a href="https://www.ozon.ru/seller/vse-dlya-azs-3010944/" target="_blank" rel="noopener">Ozon</a>, а также заказать товар непосредственно на сайте, оплачивая товары через сервис онлайн-платежей Robokassa (<a href="https://piusi-raasm.ru/publichnaya-oferta/" target="_blank" rel="noopener">публичная оферта</a>).</p>
+
+            <p><strong>Для оформления заказа на сайте:</strong></p>
+            <ol>
+                <li>Добавьте интересующие Вас Товары в Корзину;</li>
+                <li>Перейдите на страницу Корзины и оформите Заказ, указав ФИО, контактные данные и комментарии к заказу;</li>
+                <li>Наш менеджер свяжется с Вами для уточнения данных и направления ссылки на оплату Заказа;</li>
+                <li>Оплатите Заказ удобным для Вас способом;</li>
+                <li>Ожидайте доставку Товаров или приезжайте за самовывозом.</li>
+            </ol>
+
+            <div class="logo-wrapper">
+                <img src="https://piusi-raasm.ru/wp-content/uploads/2026/08/mir-1-1.svg" alt="Мир" width="88" height="88" />
+                <img src="https://piusi-raasm.ru/wp-content/uploads/2026/08/yandexsplit-1-1.svg" alt="Yandex Split" width="88" height="88" />
+                <img src="https://piusi-raasm.ru/wp-content/uploads/2026/08/mastercard-1.svg" alt="Mastercard" width="88" height="88" />
+                <img src="https://piusi-raasm.ru/wp-content/uploads/2026/08/sbp-1.svg" alt="СБП" width="88" height="88" />
+                <img src="https://piusi-raasm.ru/wp-content/uploads/2026/08/visa-1.svg" alt="Visa" width="88" height="88" />
+                <img src="https://piusi-raasm.ru/wp-content/uploads/2026/08/tpay-1.svg" alt="T-Pay" width="88" height="88" />
+                <img src="https://piusi-raasm.ru/wp-content/uploads/2026/08/yandexpay-1.svg" alt="Yandex Pay" width="88" height="88" />
+                <img src="https://piusi-raasm.ru/wp-content/uploads/2026/08/logo_robokassa-1.svg" alt="Robokassa" width="174" height="88" />
+            </div>
+
+            <p><strong>Доставка</strong></p>
+
+            <p>Осуществляем доставку по всей России транспортными компаниями (Деловые Линии, ПЭК, СДЭК и др.). Отгрузка заказанных вами товаров со склада компании будет осуществлена в кратчайшие сроки — от 2 рабочих дней в зависимости от наличия товара на складе и региона доставки. Возможен самовывоз со склада в Москве. Стоимость доставки рассчитывается индивидуально. Оформляйте доставку удобным для вас способом.</p>
+
+            <p>Срок доставки рассчитывается индивидуально. Отсчет времени доставки начинается с момента оформления заказа.</p>
+
+            <p>За более подробной информацией обращайтесь к менеджерам компании по телефону <a href="tel:+74957893464">+7 (495) 789-34-64</a> или на почту <a href="mailto:info@pse.ru">info@pse.ru</a></p>
+
+            <p><strong>Доставка по Москве</strong></p>
+
+            <p>В г. Москва работает служба доставки ООО «Торговый Дом «Все для АЗС». Доставка осуществляется в течение 5 рабочих дней с момента 100% оплаты счета.</p>
+
+            <p>За дополнительной информацией обращайтесь по телефону <a href="tel:+74957893464">+7 (495) 789-34-64</a> или на почту <a href="mailto:andrey.borisov@pse.ru">andrey.borisov@pse.ru</a></p>
+
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+(function () {
+    'use strict';
+
+    function onClick(e) {
+        var target = e.target;
+        if (!target || !target.closest) return;
+
+        // ----- открытие -----
+        var trigger = target.closest('[data-popup]');
+        if (trigger) {
+            var id = trigger.getAttribute('data-popup');
+            var popup = document.getElementById(id);
+            if (!popup) return;
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            open(popup);
+            return;
+        }
+
+        // ----- закрытие (крестик или затемнение) -----
+        if (target.closest('[data-popup-close]')) {
+            e.preventDefault();
+            e.stopPropagation();
+            close();
+        }
+    }
+
+    function open(popup) {
+        close();
+
+        popup.classList.add('is-open');
+        popup.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('azs-popup-opened');
+
+        // прокрутку окна — в начало
+        var content = popup.querySelector('.azs-popup__content');
+        if (content) content.scrollTop = 0;
+
+        var dialog = popup.querySelector('.azs-popup__dialog');
+        if (dialog) dialog.focus();
+    }
+
+    function close() {
+        var opened = document.querySelectorAll('.azs-popup.is-open');
+
+        for (var i = 0; i < opened.length; i++) {
+            opened[i].classList.remove('is-open');
+            opened[i].setAttribute('aria-hidden', 'true');
+        }
+
+        document.body.classList.remove('azs-popup-opened');
+
+        // если окно открылось по хэшу (#azs-popup-…), убираем хэш,
+        // иначе CSS-правило :target держало бы окно открытым
+        if (/^#azs-popup-/.test(location.hash)) {
+            if (window.history && history.replaceState) {
+                history.replaceState(null, '', location.pathname + location.search);
+            }
+        }
+    }
+
+    document.addEventListener('click', onClick, true);
+
+    document.addEventListener('keydown', function (e) {
+        // Esc — закрыть; пробел/стрелки не трогаем, чтобы окно скроллилось клавиатурой
+        if (e.key === 'Escape' || e.keyCode === 27) close();
+    });
+
+    // API для проверки из консоли браузера:
+    //   azsPopupOpen('azs-popup-delivery')  — открыть
+    //   azsPopupClose()                     — закрыть
+    window.azsPopupOpen = function (id) {
+        var popup = document.getElementById(id);
+        if (popup) open(popup);
+        return !!popup;
+    };
+    window.azsPopupClose = close;
+})();
 </script>
 
 

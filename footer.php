@@ -42,7 +42,7 @@
                 </div>
                 <div class="form--policy">
                     <label class="form--input input-checkbox">
-                        <input type="checkbox" name="mailing" value="1" data-validate="mailing" required>
+						<input type="checkbox" name="mailing" value="1" data-validate="mailing" required><span></span>
                     </label>
                     <span>Согласен на получение рекламных и информационных сообщений в соответствии с
                         <a href="<?php echo esc_url($offer_url); ?>">Офертой</a>

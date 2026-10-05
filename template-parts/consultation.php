@@ -1,6 +1,9 @@
 <?php
 $title    = !empty($args['title']) ? $args['title'] : 'Нужна консультация?<br> Оставьте заявку ↓';
 $subtitle = !empty($args['subtitle']) ? $args['subtitle'] : 'Поможем выбрать, оформить и установить оборудование';
+
+$privacy_url = home_url('/privacy-policy/');
+$offer_url   = home_url('/publichnaya-oferta/');
 ?>
 <div class="block block_banner block_banner-form">
     <div class="block--wrapper">

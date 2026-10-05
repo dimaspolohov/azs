@@ -16,7 +16,7 @@
     $dzen = function_exists('get_field') ? get_field('social_dzen', 'option') : '';
 
     $privacy_url = home_url('/privacy-policy/');
-    $offer_url   = '#';
+    $offer_url   = home_url('/publichnaya-oferta/');
     ?>
 
   <section class="footer__subscribe">

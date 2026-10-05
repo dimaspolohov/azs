@@ -31,19 +31,11 @@ function azs_consent_mailing_given() {
 // обновите его здесь, иначе в журнал попадёт не то, что видел посетитель.
 function azs_consent_texts($form_id) {
     $privacy_url = home_url('/privacy-policy/');
+    $offer_url   = home_url('/publichnaya-oferta/');
 
-    if ('consultation' === $form_id) {
-        return array(
-            'privacy' => array(
-                'text' => 'Нажимая на кнопку «Оставить заявку», вы соглашаетесь на обработку персональных данных в соответствии с политикой обработки персональных данных',
-                'url'  => $privacy_url,
-            ),
-        );
-    }
-
-    // Подписка в футере и попап подписки шлют один form_type=news;
-    // футер отличается обязательным чекбоксом mailing.
-    if ('news' === $form_id && isset($_POST['mailing'])) {
+    // Форма консультации и подписка в футере шлют чекбоксы privacy и mailing
+    // с одинаковыми текстами; попап подписки шлёт тот же form_type=news без mailing.
+    if ('consultation' === $form_id || ('news' === $form_id && isset($_POST['mailing']))) {
         return array(
             'privacy' => array(
                 'text' => 'Согласен на обработку персональных данных в соответствии с Политикой конфиденциальности',
@@ -51,6 +43,7 @@ function azs_consent_texts($form_id) {
             ),
             'mailing' => array(
                 'text' => 'Согласен на получение рекламных и информационных сообщений в соответствии с Офертой',
+                'url'  => $offer_url,
             ),
         );
     }

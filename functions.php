@@ -715,6 +715,25 @@ function azs_handle_form_submission()
     }
 }
 // ===========================================
+// News card image: the list image if set, otherwise the post image
+// ===========================================
+function azs_news_card_image()
+{
+    $list_image_id = function_exists('get_field') ? (int) get_field('news_list_image') : 0;
+    $url = $list_image_id ? wp_get_attachment_image_url($list_image_id, 'medium_large') : '';
+    if (!$url && has_post_thumbnail()) {
+        $url = get_the_post_thumbnail_url(get_the_ID(), 'medium_large');
+    }
+    if (!$url) {
+        $url = azs_img('1.jpg');
+    }
+
+    // The image is shown whole; a blurred copy fills the card around it when the proportions differ
+    echo '<img class="image--backdrop" src="' . esc_url($url) . '" alt="" aria-hidden="true">';
+    echo '<img src="' . esc_url($url) . '" alt="' . the_title_attribute(array('echo' => false)) . '">';
+}
+
+// ===========================================
 // News archive: posts per page
 // ===========================================
 add_action('pre_get_posts', 'azs_news_archive_query');
@@ -750,13 +769,7 @@ function azs_load_more_news()
     while ($query->have_posts()) : $query->the_post(); ?>
         <a class="card showInUp" href="<?php the_permalink(); ?>">
             <div class="card--image">
-                <div class="image">
-                    <?php if (has_post_thumbnail()) : ?>
-                        <img src="<?php echo esc_url(get_the_post_thumbnail_url(get_the_ID(), 'medium_large')); ?>" alt="<?php the_title_attribute(); ?>">
-                    <?php else : ?>
-                        <img src="<?php echo azs_img('1.jpg'); ?>" alt="<?php the_title_attribute(); ?>">
-                    <?php endif; ?>
-                </div>
+                <div class="image"><?php azs_news_card_image(); ?></div>
                 <div class="card--date"><?php echo get_the_date('d.m.Y'); ?></div>
             </div>
             <div class="card--content">

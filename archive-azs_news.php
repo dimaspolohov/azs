@@ -24,13 +24,7 @@
                     <?php while (have_posts()) : the_post(); ?>
                         <a class="card showInUp" href="<?php the_permalink(); ?>">
                             <div class="card--image">
-                                <div class="image">
-                                    <?php if (has_post_thumbnail()) : ?>
-                                        <img src="<?php echo esc_url(get_the_post_thumbnail_url(get_the_ID(), 'medium_large')); ?>" alt="<?php the_title_attribute(); ?>">
-                                    <?php else : ?>
-                                        <img src="<?php echo azs_img('1.jpg'); ?>" alt="<?php the_title_attribute(); ?>">
-                                    <?php endif; ?>
-                                </div>
+                                <div class="image"><?php azs_news_card_image(); ?></div>
                                 <div class="card--date"><?php echo get_the_date('d.m.Y'); ?></div>
                             </div>
                             <div class="card--content">

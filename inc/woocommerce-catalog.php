@@ -1009,6 +1009,32 @@ function azs_get_payment_delivery_url() {
 }
 
 // ------------------------------------------------------------------
+// Helper: product category for the breadcrumbs and recommended products.
+// The Yoast "primary" category picks the catalog section, and the most
+// specific category the product has inside it is used, so a parent marked
+// as primary doesn't shorten the breadcrumbs.
+// ------------------------------------------------------------------
+function azs_get_product_primary_cat($product_id) {
+    $terms = wc_get_product_terms($product_id, 'product_cat', array('orderby' => 'parent', 'order' => 'DESC'));
+    if (empty($terms)) return null;
+
+    $primary_id = function_exists('yoast_get_primary_term_id') ? (int) yoast_get_primary_term_id('product_cat', $product_id) : 0;
+    if (!$primary_id) return $terms[0];
+
+    $best       = null;
+    $best_depth = -1;
+    foreach ($terms as $term) {
+        $ancestors = get_ancestors($term->term_id, 'product_cat');
+        if ($term->term_id !== $primary_id && !in_array($primary_id, $ancestors, true)) continue;
+        if (count($ancestors) > $best_depth) {
+            $best       = $term;
+            $best_depth = count($ancestors);
+        }
+    }
+    return $best ? $best : $terms[0];
+}
+
+// ------------------------------------------------------------------
 // Remove default WC / Storefront single product hooks
 // ------------------------------------------------------------------
 add_action('template_redirect', 'azs_remove_single_product_hooks');

@@ -51,8 +51,7 @@ while (have_posts()) : the_post();
         }
     }
 
-    $terms        = wc_get_product_terms($product_id, 'product_cat', array('orderby' => 'parent', 'order' => 'DESC'));
-    $primary_term = !empty($terms) ? $terms[0] : null;
+    $primary_term = azs_get_product_primary_cat($product_id);
     $shop_url     = get_permalink(wc_get_page_id('shop'));
     $attributes   = $product->get_attributes();
 

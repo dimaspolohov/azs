@@ -538,4 +538,34 @@ function azs_register_acf_fields() {
             ),
         ),
     ));
+
+    // =============================================
+    // NEWS — IMAGE FOR THE NEWS LIST
+    // =============================================
+    acf_add_local_field_group(array(
+        'key'    => 'group_news_list_image',
+        'title'  => 'Картинка для списка новостей',
+        'fields' => array(
+            array(
+                'key'           => 'field_news_list_image',
+                'label'         => 'Картинка для списка',
+                'name'          => 'news_list_image',
+                'type'          => 'image',
+                'return_format' => 'id',
+                'preview_size'  => 'medium',
+                'instructions'  => 'Необязательно. Горизонтальная картинка 1280×800 (пропорции 16:10) для карточки в списке новостей и на главной. Если не заполнено, в карточке показывается изображение записи целиком.',
+            ),
+        ),
+        'location' => array(
+            array(
+                array(
+                    'param'    => 'post_type',
+                    'operator' => '==',
+                    'value'    => 'azs_news',
+                ),
+            ),
+        ),
+        'position' => 'side',
+        'style'    => 'default',
+    ));
 }

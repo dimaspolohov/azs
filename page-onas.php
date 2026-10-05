@@ -27,17 +27,39 @@ $tabs = function_exists('get_field') ? get_field('article_tabs') : null;
 <div class="block article">
     <div class="block--wrapper">
 
+            <?php
+            $sections = array(
+                '/about/'                  => 'О нас',
+                '/oplata-i-dostavka/'      => 'Оплата и доставка',
+                '/garantiya-i-servis/'     => 'Гарантия и сервис',
+                '/poleznaya-informaczija/' => 'Полезная информация',
+                '/kontakty/'               => 'Контакты',
+            );
+            $current_path = trailingslashit(wp_parse_url(get_permalink(), PHP_URL_PATH));
+            ?>
             <div class="side">
                 <div class="side--wrapper">
-                    
-                        <a class="item" href="/about/"><span>О нас</span></a>
-                        <a class="item" href="/oplata-i-dostavka/"><span>Оплата и доставка</span></a>
-                        <a class="item" href="/garantiya-i-servis/"><span>Гарантия и сервис</span></a>
-                        <a class="item" href="/poleznaya-informaczija/"><span>Полезная информация</span></a>
-                        <a class="item" href="/kontakty/"><span>Контакты</span></a>
-                    
+                    <?php foreach ($sections as $section_path => $section_title) : ?>
+                        <a class="item<?php echo $section_path === $current_path ? ' is_active' : ''; ?>" href="<?php echo esc_url($section_path); ?>"><span><?php echo esc_html($section_title); ?></span></a>
+                    <?php endforeach; ?>
                 </div>
             </div>
+
+            <?php if ($current_path === '/about/') :
+                // The sections used to be tabs of this page: /about/#контакты
+                $old_anchors = array();
+                foreach ($sections as $section_path => $section_title) {
+                    $old_anchors[azs_slug($section_title)] = $section_path;
+                }
+            ?>
+                <script>
+                    (function() {
+                        var sections = <?php echo wp_json_encode($old_anchors, JSON_UNESCAPED_UNICODE); ?>;
+                        var path = sections[decodeURIComponent(location.hash.replace('#', ''))];
+                        if (path && path !== location.pathname) location.replace(path);
+                    })();
+                </script>
+            <?php endif; ?>
 
 
 

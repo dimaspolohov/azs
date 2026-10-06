@@ -11,6 +11,7 @@ require_once get_stylesheet_directory() . '/inc/woocommerce-cart.php';
 require_once get_stylesheet_directory() . '/inc/import.php';
 require_once get_stylesheet_directory() . '/inc/canonical-redirect.php';
 require_once get_stylesheet_directory() . '/inc/yoast-product-seo.php';
+require_once get_stylesheet_directory() . '/inc/seo-hooks.php';
 
 // ===========================================
 // Theme Setup

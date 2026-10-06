@@ -124,7 +124,7 @@ if ($current_term && !empty($current_term->name)) {
 <?php endif; ?>
 
 <!-- Catalog -->
-<div class="block catalog" id="azs-catalog" data-base-cat="<?php echo esc_attr($base_cat_id); ?>">
+<div class="block catalog" id="azs-catalog" data-base-cat="<?php echo esc_attr($base_cat_id); ?>" data-seo="<?php echo $seo_content !== '' ? '1' : '0'; ?>">
     <div class="block--wrapper">
 
         <!-- ===== Sidebar ===== -->
@@ -488,7 +488,7 @@ if ($current_term) {   // на главной каталога $current_term п�
     </div>
 </div>
 
-<?php if ($seo_content) : ?>
+<?php if ($seo_content && $paged <= 1) : ?>
     <div class="block html-code">
         <div class="block--wrapper">
             <div class="block--content is_cascade">

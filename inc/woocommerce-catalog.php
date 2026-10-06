@@ -946,7 +946,20 @@ function azs_catalog_inline_js() {
             tagsEl.innerHTML = html;
         }
 
+        function syncCatalogSeo() {
+            var seoBlock = document.querySelector('.block.html-code');
+            if (state.page <= 1 && catalog.dataset.seo === '1' && !seoBlock) {
+                updateURL();
+                window.location.reload();
+                return true;
+            }
+            if (seoBlock) seoBlock.hidden = state.page > 1;
+            return false;
+        }
+
         function loadProducts() {
+            if (syncCatalogSeo()) return;
+
             var fd = new FormData();
             fd.append('action', 'azs_catalog_filter');
             fd.append('sort', state.sort);

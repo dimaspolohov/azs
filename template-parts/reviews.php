@@ -73,7 +73,7 @@ $reviews = new WP_Query(array(
                             <?php foreach ($gallery as $image) : ?>
                                 <img data-fancybox="review_<?php echo $review_id; ?>"
                                      src="<?php echo esc_url($image['url']); ?>"
-                                     loading="lazy" alt="">
+                                     loading="lazy" alt="<?php echo esc_attr($image['alt'] ?? ''); ?>">
                             <?php endforeach; ?>
                         </div>
                         <?php endif; ?>

@@ -41,7 +41,26 @@ function azs_get_product_seo_title()
         return '';
     }
 
-    return $h1 . ' — купить в компании «Всё для АЗС»';
+    return $h1 . ' купить в ТД «Всё для АЗС»';
+}
+
+function azs_get_product_seo_price()
+{
+    if (!function_exists('wc_get_product')) {
+        return '';
+    }
+
+    $product = wc_get_product(get_queried_object_id());
+    if (!$product) {
+        return '';
+    }
+
+    $price = $product->get_price();
+    if ($price === '' || $price === null) {
+        return '';
+    }
+
+    return number_format((float) $price, 0, '', ' ');
 }
 
 function azs_get_product_seo_description()
@@ -51,7 +70,13 @@ function azs_get_product_seo_description()
         return '';
     }
 
-    return $h1 . ' купить в интернет-магазине по выгодным ценам. Доставка по всей России, гарантия, оплата по счёту.';
+    $text = $h1 . ' купить в интернет-магазине «Всё для АЗС»';
+    $price = azs_get_product_seo_price();
+    if ($price !== '') {
+        $text .= ' по цене от ' . $price . ' руб';
+    }
+
+    return $text . '. Широкий ассортимент мировых и российских брендов. Гарантия от производителя. Доставка по всей России.';
 }
 
 add_filter('wpseo_title', 'azs_yoast_product_title', 20);

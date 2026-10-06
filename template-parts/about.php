@@ -19,7 +19,7 @@
             </div>
             <div class="card showInUp">
                 <div class="card--label"><img src="<?php echo azs_img('icon-2.svg'); ?>" alt=""></div>
-                <div class="card--image"><img src="<?php echo azs_img('about/card-2-640px.jpg'); ?>" alt=""></div>
+                <div class="card--image"><img src="<?php echo azs_img('about/card-2-640px.jpg'); ?>" alt="Гарантия и сервис оборудования PIUSI, RAASM"></div>
                 <div class="card--content">
                     <div class="card--title">Гарантия</div>
                     <div class="card--text">На продукцию PIUSI, RAASM, Fill-Rite и ADAM PUMPS действует гарантия от производителя</div>
@@ -27,7 +27,7 @@
             </div>
             <div class="card showInUp">
                 <div class="card--label"><img src="<?php echo azs_img('icon-3.svg'); ?>" alt=""></div>
-                <div class="card--image"><img src="<?php echo azs_img('about/card-3-640px.jpg'); ?>" alt=""></div>
+                <div class="card--image"><img src="<?php echo azs_img('about/card-3-640px.jpg'); ?>" alt="Техподдержка компании piusi-raasm.ru"></div>
                 <div class="card--content">
                     <div class="card--title">Техподдержка</div>
                     <div class="card--text">В нашей компании действует технический отдел, который поможет устранить неполадки</div>
@@ -35,7 +35,7 @@
             </div>
             <div class="card showInUp">
                 <div class="card--label"><img src="<?php echo azs_img('icon-4.svg'); ?>" alt=""></div>
-                <div class="card--image"><img src="<?php echo azs_img('about/card-4-640px.jpg'); ?>" alt=""></div>
+                <div class="card--image"><img src="<?php echo azs_img('about/card-4-640px.jpg'); ?>" alt="Оборудование для АЗС — официальный дистрибьютор PIUSI в России"></div>
                 <div class="card--content">
                     <div class="card--title">Доставка</div>
                     <div class="card--text">Доставка по Москве — службой нашего торгового дома, по России — транспортными компаниями</div>

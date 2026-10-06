@@ -58,21 +58,28 @@ if(document.querySelector('.header')){
 }
 
 // Scrolls up so that the element's top sits right below the sticky header.
-// Does nothing when the element's top is already visible.
-window.azsScrollToElement = function (el) {
+// Does nothing when the element's top is already visible. `immediate` jumps
+// without animation, e.g. right before a reload.
+window.azsScrollToElement = function (el, immediate) {
   if (!el) return;
   const header = document.querySelector('.header');
   const offset = (header ? header.offsetHeight : 0) + 16;
   const top = Math.max(0, Math.round(el.getBoundingClientRect().top + window.scrollY - offset));
   if (window.scrollY <= top) return;
 
+  // html has scroll-behavior: smooth, which turns even Lenis's immediate jump into an animation
+  const html = document.documentElement;
+  if (immediate) html.style.scrollBehavior = 'auto';
+
   if (window.lenis) {
     // Lenis ignores a target equal to its stored position, which is stale if it missed a native scroll
     if (!window.lenis.isScrolling) window.lenis.scrollTo(window.scrollY, { immediate: true });
-    window.lenis.scrollTo(top);
+    window.lenis.scrollTo(top, { immediate: !!immediate });
   } else {
-    window.scrollTo({ top: top, behavior: 'smooth' });
+    window.scrollTo({ top: top, behavior: immediate ? 'auto' : 'smooth' });
   }
+
+  if (immediate) html.style.scrollBehavior = '';
 };
 
 Inputmask({

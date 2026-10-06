@@ -920,7 +920,9 @@ function azs_catalog_inline_js() {
             if (state.isSale)              p.set('azs_sale', '1');
             if (state.page > 1)            p.set('paged', state.page);
             var qs = p.toString();
-            history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : ''));
+            // WordPress redirects ?paged=N to /page/N/; the page number now lives in the query string
+            var path = window.location.pathname.replace(/\/page\/\d+\/?$/, '/');
+            history.replaceState(null, '', path + (qs ? '?' + qs : ''));
         }
 
         function renderTags() {
@@ -950,6 +952,8 @@ function azs_catalog_inline_js() {
             var seoBlock = document.querySelector('.block.html-code');
             if (state.page <= 1 && catalog.dataset.seo === '1' && !seoBlock) {
                 updateURL();
+                // The browser keeps the scroll position on reload: move it to the catalog top first
+                if (window.azsScrollToElement) window.azsScrollToElement(catalog, true);
                 window.location.reload();
                 return true;
             }

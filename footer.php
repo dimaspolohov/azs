@@ -108,7 +108,7 @@
                 </div>
             </div>
 
-            <div class="footer__nav -desk">
+            <div class="footer__nav">
                 <div class="nav">
                     <?php
                     wp_nav_menu(array(
@@ -123,7 +123,7 @@
             </div>
 
             <div class="footer__nav">
-                <div class="nav -desk">
+                <div class="nav">
                     <?php
                     wp_nav_menu(array(
                         'theme_location' => 'footer_col_2',

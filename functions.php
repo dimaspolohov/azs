@@ -200,6 +200,16 @@ function azs_enqueue_assets()
                 grid-column: 2 / span 3;
             }
 
+            /* Subcategory tiles take the first row: shift the tags and keep the stretchable row
+               for the products, otherwise the search grows to the side menu height on short pages */
+            .page-catalog .catalog .block--wrapper:has(> .block--subcats) {
+                grid-template-rows: auto auto auto 1fr auto;
+            }
+
+            .catalog .block--wrapper:has(> .block--subcats) > .block--tags {
+                grid-row: 3;
+            }
+
             .category {
                 background: var(--c-white, #FFFFFF) !important;
             }
@@ -729,8 +739,7 @@ function azs_news_card_image()
         $url = azs_img('1.jpg');
     }
 
-    // The image is shown whole; a blurred copy fills the card around it when the proportions differ
-    echo '<img class="image--backdrop" src="' . esc_url($url) . '" alt="" aria-hidden="true">';
+    // The image is shown whole on a white background when the proportions differ
     echo '<img src="' . esc_url($url) . '" alt="' . the_title_attribute(array('echo' => false)) . '">';
 }
 

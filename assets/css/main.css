@@ -2949,25 +2949,14 @@ input[type=number] {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  position: relative;
+  background-color: var(--c-white);
 }
 .news .card--image img {
   -webkit-transition: 0.3s ease-out;
   -o-transition: 0.3s ease-out;
   transition: 0.3s ease-out;
-  position: relative;
   -o-object-fit: contain;
      object-fit: contain;
-}
-.news .card--image .image--backdrop {
-  position: absolute;
-  inset: 0;
-  -o-object-fit: cover;
-     object-fit: cover;
-  -webkit-filter: blur(20px);
-          filter: blur(20px);
-  -webkit-transform: scale(1.2);
-          transform: scale(1.2);
 }
 .news .card--date {
   font-size: var(--s-16);

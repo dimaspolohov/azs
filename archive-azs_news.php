@@ -16,7 +16,7 @@
     <div class="block news">
         <div class="block--wrapper">
             <div class="block--title showInUp">
-                <h2 class="block--title_title">Новости торгового дома «Все для АЗС»</h2>
+                <h1 class="block--title_title">Новости торгового дома «Все для АЗС»</h1>
             </div>
 
             <?php if (have_posts()) : ?>

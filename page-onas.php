@@ -64,6 +64,9 @@ $tabs = function_exists('get_field') ? get_field('article_tabs') : null;
 
 
             <div class="block--content is_cascade">
+                <?php if ($current_path === '/about/') : ?>
+                    <h1 class="article-heading">О компании «Всё для АЗС»</h1>
+                <?php endif; ?>
                 <h2><?php the_title(); ?></h2>
                 <?php the_content(); ?>
             </div>

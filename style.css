@@ -5,9 +5,35 @@ Description:  Storefront Child Theme
 Author:       Your Name
 Author URI:   https://example.com/
 Template:     storefront
-Version:      1.0.0
+Version:      1.0.3
 License:      GNU General Public License v2 or later
 License URI:  http://www.gnu.org/licenses/gpl-2.0.html
 Tags:         custom, e-commerce, woocommerce
 Text Domain:  storefront-child
 */
+
+.home .banner-hero {
+	margin-bottom: 0;
+}
+
+.home-heading {
+	display: flex;
+	align-items: center;
+	min-height: var(--vertical-g);
+	margin: 0 var(--s-8);
+	padding: var(--s-16) 0;
+}
+
+@media (min-width: 641px) {
+	.home-heading {
+		margin: 0 var(--s-32);
+		padding: 0;
+	}
+}
+
+.is_cascade h1.article-heading {
+	font-size: var(--s-10);
+	line-height: var(--s-16);
+	font-weight: 500;
+	margin: 0;
+}

@@ -31,7 +31,6 @@ while (have_posts()) : the_post();
     $regular_price = $product->get_regular_price();
     $sale_price    = $product->get_sale_price();
     $price         = $product->get_price();
-    $stock_qty     = $product->get_stock_quantity();
 
     $featured_id   = $product->get_image_id();
     $gallery_ids   = $product->get_gallery_image_ids();
@@ -134,7 +133,7 @@ while (have_posts()) : the_post();
 <?endif?>
 
 
-                <div class="card--stock"><?php if ($is_in_stock) : ?><span class="card--stock-label">В наличии:</span><span class="card--stock-value"><?php echo $stock_qty !== null ? esc_html($stock_qty . ' шт') : 'на складе'; ?></span><?php else : ?><span class="card--stock-label">Нет в наличии</span><?php endif; ?></div>
+                <div class="card--stock"><?php if ($is_in_stock) : ?><span class="card--stock-label">В наличии:</span><span class="card--stock-value"><?php echo esc_html(azs_get_stock_level_label($product, 'на складе')); ?></span><?php else : ?><span class="card--stock-label">Нет в наличии</span><?php endif; ?></div>
               </div>
               <div class="card--actions">
                 <?php if ($is_in_stock) : ?>

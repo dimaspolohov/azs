@@ -361,6 +361,19 @@ function azs_apply_catalog_stock_order($args, $sort) {
 }
 
 // ------------------------------------------------------------------
+// Stock level shown instead of the exact quantity: more than
+// AZS_STOCK_LOW_MAX pcs is "достаточно", 1..AZS_STOCK_LOW_MAX is
+// "заканчивается". $fallback is for products without a managed quantity.
+// ------------------------------------------------------------------
+define('AZS_STOCK_LOW_MAX', 10);
+
+function azs_get_stock_level_label($product, $fallback) {
+    $qty = $product->get_stock_quantity();
+    if ($qty === null) return $fallback;
+    return $qty > AZS_STOCK_LOW_MAX ? 'достаточно' : 'заканчивается';
+}
+
+// ------------------------------------------------------------------
 // Render a single product card (matches catalog.html .card markup)
 // ------------------------------------------------------------------
 function azs_render_product_card($product_id) {
@@ -371,7 +384,6 @@ function azs_render_product_card($product_id) {
     $is_on_sale    = $product->is_on_sale();
     $is_new        = get_post_meta($product_id, 'is_new', true) === 'yes';
     $sku           = $product->get_sku();
-    $stock_qty     = $product->get_stock_quantity();
     $permalink     = get_permalink($product_id);
     $image_url     = get_the_post_thumbnail_url($product_id, 'medium_large');
     $title         = get_the_title($product_id);
@@ -433,7 +445,7 @@ function azs_render_product_card($product_id) {
                 <div class="card--stock<?php echo !$is_in_stock ? ' card--stock--out' : ''; ?>">
                     <?php if ($is_in_stock) : ?>
                         <span class="card--stock-label">В наличии: </span>
-                        <span class="card--stock-value"><?php echo $stock_qty !== null ? esc_html($stock_qty . ' шт') : 'да'; ?></span>
+                        <span class="card--stock-value"><?php echo esc_html(azs_get_stock_level_label($product, 'да')); ?></span>
                     <?php else : ?>
                         <span class="card--stock-out">Нет в наличии</span>
                     <?php endif; ?>

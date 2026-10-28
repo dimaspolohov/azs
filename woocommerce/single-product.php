@@ -133,7 +133,7 @@ while (have_posts()) : the_post();
 <?endif?>
 
 
-                <div class="card--stock"><?php if ($is_in_stock) : ?><span class="card--stock-label">В наличии:</span><span class="card--stock-value"><?php echo esc_html(azs_get_stock_level_label($product, 'на складе')); ?></span><?php else : ?><span class="card--stock-label">Нет в наличии</span><?php endif; ?></div>
+                <div class="card--stock"><?php if ($is_in_stock) : ?><span class="card--stock-label">В наличии: </span><span class="card--stock-value"><?php echo esc_html(azs_get_stock_level_label($product, 'на складе')); ?></span><?php else : ?><span class="card--stock-label">Нет в наличии</span><?php endif; ?></div>
               </div>
               <div class="card--actions">
                 <?php if ($is_in_stock) : ?>
